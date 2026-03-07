@@ -1,0 +1,265 @@
+/* Using styling inspired by FeeFier / PreTab's minimalist and modern aesthetic */
+
+:root {
+  --bg-color: #f9f9fa;
+  --text-color: #202124;
+  --panel-bg: #ffffff;
+  --border-color: #dadce0;
+  --primary-color: #1a73e8;
+  --primary-hover: #1765cc;
+  --secondary-bg: #f1f3f4;
+  --secondary-hover: #e8eaed;
+  --danger-color: #d93025;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #202124;
+    --text-color: #e8eaed;
+    --panel-bg: #292a2d;
+    --border-color: #3c4043;
+    --primary-color: #8ab4f8;
+    --primary-hover: #aecbfa;
+    --secondary-bg: #3c4043;
+    --secondary-hover: #5f6368;
+    --danger-color: #f28b82;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+header {
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-md);
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: var(--spacing-sm);
+}
+
+p {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.rules-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Rule Card */
+.rule-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--secondary-bg);
+}
+
+.rule-info {
+  flex-grow: 1;
+}
+
+.rule-regex {
+  font-weight: 600;
+  font-family: monospace;
+  font-size: 14px;
+  word-break: break-all;
+  margin-bottom: 4px;
+}
+
+.rule-css-preview {
+  font-size: 12px;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+
+.rule-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-group input, 
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-family: monospace;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.primary-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  .primary-btn {
+    color: #1a73e8; /* Dark mode tweaks */
+  }
+}
+
+.secondary-btn {
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.secondary-btn:hover {
+  background-color: var(--secondary-hover);
+}
+
+.danger-btn {
+  background-color: transparent;
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.danger-btn:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color);
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}

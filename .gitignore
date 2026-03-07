@@ -1,0 +1,25 @@
+# OS system files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Editor / IDE specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Node / JS
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build / Output
+dist/
+build/
+*.zip
+*.crx

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PagePalette Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PagePalette</h1>
+      <p id="descText">Manage your custom CSS rules here.</p>
+    </header>
+
+    <main>
+      <!-- List of existing rules -->
+      <section id="rulesSection">
+        <div class="rules-header">
+          <h2>Your Rules</h2>
+          <button id="addNewBtn" class="primary-btn">+ Add New Rule</button>
+        </div>
+        <div id="rulesList" class="rules-list">
+          <!-- Rule cards will be injected here via JS -->
+        </div>
+      </section>
+
+      <!-- Editor Panel (hidden by default) -->
+      <section id="editorSection" class="hidden">
+        <h2 id="editorTitle">Edit Rule</h2>
+        
+        <div class="form-group">
+          <label for="ruleRegex">URL Regular Expression</label>
+          <input type="text" id="ruleRegex" placeholder="e.g. .*example\.com.*">
+          <small class="hint">This determines which websites this CSS will be injected into.</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="ruleCss">Custom CSS</label>
+          <textarea id="ruleCss" placeholder="body { background-color: #f0f0f0 !important; }"></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button id="saveRuleBtn" class="primary-btn">Save</button>
+          <button id="cancelRuleBtn" class="secondary-btn">Cancel</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
