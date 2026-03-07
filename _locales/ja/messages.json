@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "PagePalette"
+  },
+  "extDescription": {
+    "message": "URLの条件に基づいて特定のCSSスタイルを自動的に注入し、お気に入りのウェブサイトをカスタマイズしよう。"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "PagePalette"
+  },
+  "extDescription": {
+    "message": "根据URL规则自动注入特定的CSS样式，轻松定制你最爱的网站。"
+  }
+}

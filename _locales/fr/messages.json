@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "PagePalette"
+  },
+  "extDescription": {
+    "message": "Personnalise tes sites web préférés en injectant automatiquement des styles CSS spécifiques basés sur des règles d'URL."
+  }
+}
