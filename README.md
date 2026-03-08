@@ -1,5 +1,9 @@
-# PagePalette 🎨
+![Icon](icons/logo48.png) 
 
+# PagePalette
+
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add--on-blue?logo=google-chrome)]()
+[![Microsoft Edge Add-ons](https://img.shields.io/badge/Microsoft%20Edge-Add--on-blue?logo=microsoft-edge)]()
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-orange)]()
 [![Privacy](https://img.shields.io/badge/Privacy-Friendly-green)](PRIVACY.md)
 
@@ -14,12 +18,19 @@
 
 ## Installation
 
-### For Developers (Unpacked Extension)
-1. Download or clone this repository.
-2. Open your browser and go to the extensions page (e.g., `chrome://extensions/` or `edge://extensions/`).
+You have three options to install PagePalette:
+
+**1. Chrome Web Store**
+*Link coming soon*
+
+**2. Microsoft Edge Add-ons**
+*Link coming soon*
+
+**3. Manual Installation (Unpacked)**
+1. Clone this repository or download the ZIP and extract it.
+2. Open Chrome/Edge and navigate to `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode** in the top right corner.
-4. Click on **Load unpacked**.
-5. Select the folder containing this repository.
+4. Click **Load unpacked** and select the extension folder.
 
 ## Usage
 
