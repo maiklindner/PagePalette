@@ -1,0 +1,36 @@
+# Privacy & Data Security (Chrome Web Store Disclosure)
+
+## Single Purpose: 
+PagePalette lets you customize website aesthetics by injecting custom CSS based on user-defined URL rules.
+
+## Permissions Disclosure:
+- storage: 
+Required to store your custom CSS rules and associated URL patterns locally.
+
+- scripting: 
+Required to physically apply your custom CSS styles into the matching web pages.
+
+- tabs: 
+Required to detect URL changes and trigger the styling process when navigating.
+
+- activeTab: 
+Required to securely access the current tab's URL for rule matching.
+
+- host_permissions (<all_urls>): 
+Required to allow the extension to apply styles to any website you define in your rules.
+
+Remote Code: 
+None. This extension does not use or fetch any remote code.
+
+User Data: 
+No personal data, browsing history, or identifiers are collected, stored, or transmitted.
+
+Privacy Policy: 
+https://github.com/maiklindner/PagePalette/blob/main/PRIVACY.md
+
+## Test Instructions:
+1. Open the options page.
+2. Add a new rule with Pattern: "google.com" and CSS: "body { background: red !important; }".
+3. Save the rule and ensure the toggle is active.
+4. Navigate to google.com (or any matching subpage).
+5. The custom CSS will be automatically injected, changing the page background color instantly.
