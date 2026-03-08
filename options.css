@@ -42,9 +42,11 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
-  padding: 40px 20px;
+  padding: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .container {
@@ -55,6 +57,7 @@ body {
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin: 2em;
 }
 
 header {
