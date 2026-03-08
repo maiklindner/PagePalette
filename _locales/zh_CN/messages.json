@@ -1,27 +1,62 @@
 {
-  "extName": { "message": "PagePalette" },
-  "extDesc": { "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules." },
-
-  "optionsTitle": { "message": "PagePalette 设置" },
-  "optionsDesc": { "message": "在此管理你的自定义 CSS 规则。" },
-  "optionsYourRules": { "message": "你的规则" },
-  "optionsAddNew": { "message": "+ 添加新规则" },
-  "optionsNoRules": { "message": "尚未定义任何规则。" },
-  
-  "optionsEditRule": { "message": "编辑规则" },
-  "optionsAddNewRule": { "message": "添加新规则" },
-  "optionsBtnEdit": { "message": "编辑" },
-  "optionsBtnDelete": { "message": "删除" },
-  
-  "optionsRegexLabel": { "message": "URL 正则表达式" },
-  "optionsRegexPlaceholder": { "message": "例如：.*example\\.com.*" },
-  "optionsRegexHint": { "message": "这决定了此 CSS 将注入到哪些网站。" },
-  
-  "optionsCssLabel": { "message": "自定义 CSS" },
-  "optionsBtnSave": { "message": "保存" },
-  "optionsBtnCancel": { "message": "取消" },
-  
-  "errorMissingFields": { "message": "请同时提供 URL 正则表达式和 CSS。" },
-  "errorInvalidRegex": { "message": "无效的正则表达式。" },
-  "confirmDelete": { "message": "你确定要删除此规则吗？" }
+  "extName": {
+    "message": "PagePalette"
+  },
+  "extDesc": {
+    "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
+  },
+  "optionsTitle": {
+    "message": "PagePalette"
+  },
+  "optionsDesc": {
+    "message": "在此管理你的自定义 CSS 规则。"
+  },
+  "optionsYourRules": {
+    "message": "你的规则"
+  },
+  "optionsAddNew": {
+    "message": "+ 添加新规则"
+  },
+  "optionsNoRules": {
+    "message": "尚未定义任何规则。"
+  },
+  "optionsEditRule": {
+    "message": "编辑规则"
+  },
+  "optionsAddNewRule": {
+    "message": "添加新规则"
+  },
+  "optionsBtnEdit": {
+    "message": "编辑"
+  },
+  "optionsBtnDelete": {
+    "message": "删除"
+  },
+  "optionsRegexLabel": {
+    "message": "URL 正则表达式"
+  },
+  "optionsRegexPlaceholder": {
+    "message": "例如：.*example\\.com.*"
+  },
+  "optionsRegexHint": {
+    "message": "这决定了此 CSS 将注入到哪些网站。"
+  },
+  "optionsCssLabel": {
+    "message": "自定义 CSS"
+  },
+  "optionsBtnSave": {
+    "message": "保存"
+  },
+  "optionsBtnCancel": {
+    "message": "取消"
+  },
+  "errorMissingFields": {
+    "message": "请同时提供 URL 正则表达式和 CSS。"
+  },
+  "errorInvalidRegex": {
+    "message": "无效的正则表达式。"
+  },
+  "confirmDelete": {
+    "message": "你确定要删除此规则吗？"
+  }
 }

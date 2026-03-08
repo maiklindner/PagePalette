@@ -1,27 +1,62 @@
 {
-  "extName": { "message": "PagePalette" },
-  "extDesc": { "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules." },
-
-  "optionsTitle": { "message": "Configuración de PagePalette" },
-  "optionsDesc": { "message": "Gestiona tus reglas CSS personalizadas aquí." },
-  "optionsYourRules": { "message": "Tus Reglas" },
-  "optionsAddNew": { "message": "+ Añadir Nueva Regla" },
-  "optionsNoRules": { "message": "Aún no hay reglas definidas." },
-  
-  "optionsEditRule": { "message": "Editar Regla" },
-  "optionsAddNewRule": { "message": "Añadir Nueva Regla" },
-  "optionsBtnEdit": { "message": "Editar" },
-  "optionsBtnDelete": { "message": "Eliminar" },
-  
-  "optionsRegexLabel": { "message": "Expresión Regular de URL" },
-  "optionsRegexPlaceholder": { "message": "p. ej. .*ejemplo\\.com.*" },
-  "optionsRegexHint": { "message": "Esto determina en qué sitios web se inyectará este CSS." },
-  
-  "optionsCssLabel": { "message": "CSS Personalizado" },
-  "optionsBtnSave": { "message": "Guardar" },
-  "optionsBtnCancel": { "message": "Cancelar" },
-  
-  "errorMissingFields": { "message": "Por favor, proporciona tanto una expresión regular como código CSS." },
-  "errorInvalidRegex": { "message": "Expresión Regular Inválida." },
-  "confirmDelete": { "message": "¿Estás seguro de querer eliminar esta regla?" }
+  "extName": {
+    "message": "PagePalette"
+  },
+  "extDesc": {
+    "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
+  },
+  "optionsTitle": {
+    "message": "PagePalette"
+  },
+  "optionsDesc": {
+    "message": "Gestiona tus reglas CSS personalizadas aquí."
+  },
+  "optionsYourRules": {
+    "message": "Tus Reglas"
+  },
+  "optionsAddNew": {
+    "message": "+ Añadir Nueva Regla"
+  },
+  "optionsNoRules": {
+    "message": "Aún no hay reglas definidas."
+  },
+  "optionsEditRule": {
+    "message": "Editar Regla"
+  },
+  "optionsAddNewRule": {
+    "message": "Añadir Nueva Regla"
+  },
+  "optionsBtnEdit": {
+    "message": "Editar"
+  },
+  "optionsBtnDelete": {
+    "message": "Eliminar"
+  },
+  "optionsRegexLabel": {
+    "message": "Expresión Regular de URL"
+  },
+  "optionsRegexPlaceholder": {
+    "message": "p. ej. .*ejemplo\\.com.*"
+  },
+  "optionsRegexHint": {
+    "message": "Esto determina en qué sitios web se inyectará este CSS."
+  },
+  "optionsCssLabel": {
+    "message": "CSS Personalizado"
+  },
+  "optionsBtnSave": {
+    "message": "Guardar"
+  },
+  "optionsBtnCancel": {
+    "message": "Cancelar"
+  },
+  "errorMissingFields": {
+    "message": "Por favor, proporciona tanto una expresión regular como código CSS."
+  },
+  "errorInvalidRegex": {
+    "message": "Expresión Regular Inválida."
+  },
+  "confirmDelete": {
+    "message": "¿Estás seguro de querer eliminar esta regla?"
+  }
 }
