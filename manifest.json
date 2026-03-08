@@ -28,8 +28,7 @@
     "storage",
     "scripting",
     "tabs",
-    "activeTab",
-    "offscreen"
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"

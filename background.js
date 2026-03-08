@@ -1,34 +1,5 @@
 // PagePalette Background Script
 
-// Use an offscreen document to monitor OS Dark Mode
-async function setupOffscreenDocument() {
-  if (await chrome.offscreen.hasDocument()) return;
-  await chrome.offscreen.createDocument({
-    url: 'offscreen.html',
-    reasons: ['DOM_PARSER'],
-    justification: 'Detect OS dark mode preferences via matchMedia'
-  });
-}
-
-// Initialize offscreen document when service worker starts
-chrome.runtime.onStartup.addListener(setupOffscreenDocument);
-chrome.runtime.onInstalled.addListener(setupOffscreenDocument);
-setupOffscreenDocument();
-
-// Listen for theme changes from offscreen.js
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === 'THEME_CHANGED') {
-    const isDark = message.isDark;
-    const suffix = isDark ? '-darkmode' : '';
-    chrome.action.setIcon({
-      path: {
-        "16": `icons/icon16${suffix}.png`,
-        "48": `icons/icon48${suffix}.png`,
-        "128": `icons/icon128${suffix}.png`
-      }
-    });
-  }
-});
 
 // State to track which tab has matched rules and their toggle status
 // Format: { tabId: { applicableRules: [...], hasEnabledRules: boolean } }
