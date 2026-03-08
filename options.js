@@ -13,6 +13,61 @@ const cancelRuleBtn = document.getElementById('cancelRuleBtn');
 // State
 let allRules = [];
 let editingRuleId = null;
+let currentMessages = {};
+
+function getMessage(key) {
+  return currentMessages[key] ? currentMessages[key].message : key;
+}
+
+function initLocalization(callback) {
+  chrome.storage.sync.get({ language: 'auto' }, (data) => {
+    let lang = data.language;
+    if (lang === 'auto') {
+      lang = chrome.i18n.getUILanguage().replace('-', '_');
+      const supported = ['en', 'de', 'es', 'fr', 'ja', 'pt_BR', 'zh_CN'];
+      if (!supported.includes(lang)) {
+        lang = lang.split('_')[0];
+        if (!supported.includes(lang)) lang = 'en';
+      }
+    }
+    
+    fetch(`/_locales/${lang}/messages.json`)
+      .then(res => res.ok ? res.json() : fetch(`/_locales/en/messages.json`).then(r => r.json()))
+      .then(messages => {
+        currentMessages = messages;
+        document.getElementById('langSelect').value = data.language;
+        localizeHtmlPage();
+        renderRules(); // re-render rules to catch dynamic buttons
+        if (callback) callback();
+      })
+      .catch(err => {
+        console.error("Failed to load locales", err);
+        if (callback) callback();
+      });
+  });
+}
+
+function localizeHtmlPage() {
+  document.title = getMessage('optionsTitle');
+  document.getElementById('titleH1').textContent = getMessage('extName');
+  document.getElementById('descText').textContent = getMessage('optionsDesc');
+  document.querySelector('.rules-header h2').textContent = getMessage('optionsYourRules');
+  document.getElementById('addNewBtn').textContent = getMessage('optionsAddNew');
+  
+  if (!editingRuleId) {
+    document.getElementById('editorTitle').textContent = getMessage('optionsAddNewRule');
+  } else {
+    document.getElementById('editorTitle').textContent = getMessage('optionsEditRule');
+  }
+  
+  document.querySelector('label[for="ruleRegex"]').textContent = getMessage('optionsRegexLabel');
+  document.getElementById('ruleRegex').placeholder = getMessage('optionsRegexPlaceholder');
+  document.querySelector('.hint').textContent = getMessage('optionsRegexHint');
+  
+  document.querySelector('label[for="ruleCss"]').textContent = getMessage('optionsCssLabel');
+  document.getElementById('saveRuleBtn').textContent = getMessage('optionsBtnSave');
+  document.getElementById('cancelRuleBtn').textContent = getMessage('optionsBtnCancel');
+}
 
 // Initialize
 function init() {
@@ -37,7 +92,7 @@ function renderRules() {
   rulesList.innerHTML = '';
   
   if (allRules.length === 0) {
-    rulesList.innerHTML = '<p>No rules defined yet.</p>';
+    rulesList.innerHTML = '<p>' + escapeHTML(getMessage('optionsNoRules')) + '</p>';
     return;
   }
 
@@ -58,8 +113,8 @@ function renderRules() {
           <input type="checkbox" class="toggle-rule-btn" data-id="${rule.id}" ${rule.enabled ? 'checked' : ''}>
           <span class="slider"></span>
         </label>
-        <button class="secondary-btn edit-rule-btn" data-id="${rule.id}">Edit</button>
-        <button class="danger-btn delete-rule-btn" data-id="${rule.id}">Delete</button>
+        <button class="secondary-btn edit-rule-btn" data-id="${rule.id}">${escapeHTML(getMessage('optionsBtnEdit'))}</button>
+        <button class="danger-btn delete-rule-btn" data-id="${rule.id}">${escapeHTML(getMessage('optionsBtnDelete'))}</button>
       </div>
     `;
     rulesList.appendChild(card);
@@ -82,7 +137,7 @@ function renderRules() {
 // Open editor to create a new rule
 function openEditorForNew() {
   editingRuleId = null;
-  editorTitle.textContent = 'Add New Rule';
+  editorTitle.textContent = getMessage('optionsAddNewRule');
   ruleRegexInput.value = '';
   ruleCssInput.value = '';
   
@@ -96,7 +151,7 @@ function openEditorForEdit(id) {
   if (!rule) return;
 
   editingRuleId = id;
-  editorTitle.textContent = 'Edit Rule';
+  editorTitle.textContent = getMessage('optionsEditRule');
   ruleRegexInput.value = rule.urlRegex;
   ruleCssInput.value = rule.css;
   
@@ -116,7 +171,7 @@ function saveRule() {
   const cssValue = ruleCssInput.value.trim();
 
   if (!regexValue || !cssValue) {
-    alert("Please provide both a URL regular expression and CSS.");
+    alert(getMessage('errorMissingFields'));
     return;
   }
 
@@ -124,7 +179,7 @@ function saveRule() {
   try {
     new RegExp(regexValue);
   } catch (e) {
-    alert("Invalid Regular Expression.");
+    alert(getMessage('errorInvalidRegex'));
     return;
   }
 
@@ -153,7 +208,7 @@ function saveRule() {
 
 // Delete a rule
 function deleteRule(id) {
-  if (confirm("Are you sure you want to delete this rule?")) {
+  if (confirm(getMessage('confirmDelete'))) {
     allRules = allRules.filter(r => r.id !== id);
     saveToStorage(() => {
       renderRules();
@@ -185,4 +240,14 @@ function escapeHTML(str) {
 }
 
 // Boot
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  initLocalization(() => {
+    init();
+  });
+  
+  document.getElementById('langSelect').addEventListener('change', (e) => {
+    chrome.storage.sync.set({ language: e.target.value }, () => {
+      initLocalization();
+    });
+  });
+});

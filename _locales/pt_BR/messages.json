@@ -1,8 +1,27 @@
 {
-  "extName": {
-    "message": "PagePalette"
-  },
-  "extDescription": {
-    "message": "Personalize seus sites favoritos injetando automaticamente estilos CSS específicos baseados em regras de URL."
-  }
+  "extName": { "message": "PagePalette" },
+  "extDesc": { "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules." },
+
+  "optionsTitle": { "message": "Configurações do PagePalette" },
+  "optionsDesc": { "message": "Gerencie suas regras CSS personalizadas aqui." },
+  "optionsYourRules": { "message": "Suas Regras" },
+  "optionsAddNew": { "message": "+ Adicionar Nova Regra" },
+  "optionsNoRules": { "message": "Nenhuma regra definida ainda." },
+  
+  "optionsEditRule": { "message": "Editar Regra" },
+  "optionsAddNewRule": { "message": "Adicionar Nova Regra" },
+  "optionsBtnEdit": { "message": "Editar" },
+  "optionsBtnDelete": { "message": "Excluir" },
+  
+  "optionsRegexLabel": { "message": "Expressão Regular de URL" },
+  "optionsRegexPlaceholder": { "message": "ex. .*exemplo\\.com.*" },
+  "optionsRegexHint": { "message": "Isso determina em quais sites este CSS será injetado." },
+  
+  "optionsCssLabel": { "message": "CSS Personalizado" },
+  "optionsBtnSave": { "message": "Salvar" },
+  "optionsBtnCancel": { "message": "Cancelar" },
+  
+  "errorMissingFields": { "message": "Por favor, forneça uma expressão regular de URL e um CSS." },
+  "errorInvalidRegex": { "message": "Expressão Regular Inválida." },
+  "confirmDelete": { "message": "Tem certeza de que deseja excluir esta regra?" }
 }

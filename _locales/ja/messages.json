@@ -1,8 +1,27 @@
 {
-  "extName": {
-    "message": "PagePalette"
-  },
-  "extDescription": {
-    "message": "URLの条件に基づいて特定のCSSスタイルを自動的に注入し、お気に入りのウェブサイトをカスタマイズしよう。"
-  }
+  "extName": { "message": "PagePalette" },
+  "extDesc": { "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules." },
+
+  "optionsTitle": { "message": "PagePalette の設定" },
+  "optionsDesc": { "message": "ここでカスタムCSSルールを管理します。" },
+  "optionsYourRules": { "message": "あなたのルール" },
+  "optionsAddNew": { "message": "+ 新しいルールを追加" },
+  "optionsNoRules": { "message": "まだルールが定義されていません。" },
+  
+  "optionsEditRule": { "message": "ルールの編集" },
+  "optionsAddNewRule": { "message": "新しいルールを追加" },
+  "optionsBtnEdit": { "message": "編集" },
+  "optionsBtnDelete": { "message": "削除" },
+  
+  "optionsRegexLabel": { "message": "URL正規表現" },
+  "optionsRegexPlaceholder": { "message": "例: .*example\\.com.*" },
+  "optionsRegexHint": { "message": "このCSSが注入されるウェブサイトを決定します。" },
+  
+  "optionsCssLabel": { "message": "カスタムCSS" },
+  "optionsBtnSave": { "message": "保存" },
+  "optionsBtnCancel": { "message": "キャンセル" },
+  
+  "errorMissingFields": { "message": "URL正規表現とCSSの両方を入力してください。" },
+  "errorInvalidRegex": { "message": "無効な正規表現です。" },
+  "confirmDelete": { "message": "このルールを削除してもよろしいですか？" }
 }

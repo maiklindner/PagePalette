@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "author": "Maik Lindner",
   "version": "1.0.0",
-  "description": "__MSG_extDescription__",
+  "description": "__MSG_extDesc__",
   "default_locale": "en",
   "action": {
     "default_icon": {
