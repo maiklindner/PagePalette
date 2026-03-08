@@ -1,0 +1,149 @@
+Store Listings / Store-Einträge (Plain Text Format)
+===================================================
+
+--------------------------------------------------------------------------------
+Language: English (en)
+Category: Developer Tools
+Edge Search Terms: CSS, Style, Inject, Customize, Theme, Override, Appearance
+
+Title:
+PagePalette - Custom CSS Injector
+
+Short Description (max 132 chars):
+Customize your favorite websites by automatically injecting specific CSS styles based on URL rules. 100% private and offline.
+
+Description:
+PagePalette is a lightweight browser extension that lets you apply custom CSS styles to any website. Whether you want to hide annoying banners, create a makeshift dark mode for a specific site, or just tweak the font size, PagePalette gives you full control.
+
+Features:
+- Regex URL Matching: Apply styles to a single page or domains using Regular Expressions.
+- Easy Management: An intuitive, clean options page to add, edit, toggle, and delete your rules.
+- Instant Application: Changes apply seamlessly as the page loads.
+- Privacy First: 100% offline. No data is sent to external servers or developers.
+- Lightweight: Minimal permissions and optimized background script processing.
+
+--------------------------------------------------------------------------------
+Language: German (de)
+Category: Entwicklertools (Developer Tools)
+Edge Search Terms: CSS, Stil, Code, Anpassen, Theme, Ersetzen, Layout
+
+Title:
+PagePalette - CSS Styling Extension
+
+Short Description (max 132 chars):
+Passe deine Lieblings-Websites an, indem du automatisch CSS-Stile basierend auf URL-Regeln einfügst. 100 % privat und offline.
+
+Description:
+PagePalette ist eine schlanke Browser-Erweiterung, mit der du benutzerdefinierte CSS-Stile auf jede beliebige Website anwenden kannst. Egal, ob du nervige Banner ausblenden, einen eigenen Dark Mode für eine bestimmte Seite basteln oder nur die Schriftgröße anpassen willst – PagePalette gibt dir die volle Kontrolle.
+
+Funktionen:
+- URL-Muster mit Regex: Wende Stile über Reguläre Ausdrücke an (z. B. .*wikipedia\.org.*).
+- Einfache Verwaltung: Eine übersichtliche Options-Seite für alle deine Regeln.
+- Sofort wirksam: Änderungen werden nahtlos angewendet, sobald die Seite lädt.
+- Privatsphäre zuerst: 100 % offline. Es werden keine Daten an externe Server gesendet.
+- Ressourcenschonend: Minimale Berechtigungen und optimierte Ausführung.
+
+--------------------------------------------------------------------------------
+Language: Spanish (es)
+Category: Herramientas para desarrolladores (Developer Tools)
+Edge Search Terms: CSS, Estilo, Inyectar, Personalizar, Tema, Sobrescribir, Diseño
+
+Title:
+PagePalette - Custom CSS Injector
+
+Short Description (max 132 chars):
+Personaliza tus webs favoritas inyectando estilos CSS automáticamente basados en reglas de URL. 100% privado y sin conexión.
+
+Description:
+PagePalette es una extensión ligera que te permite aplicar estilos CSS personalizados a cualquier web. Ya sea para ocultar banners molestos o crear un modo oscuro, PagePalette te da el control total.
+
+Características:
+- URLs con Regex: Aplica estilos usando expresiones regulares.
+- Gestión sencilla: Página de opciones limpia para editar tus reglas.
+- Aplicación instantánea: Los cambios se aplican automáticamente al cargar.
+- Privacidad primero: 100% sin conexión. Sin seguimiento.
+- Ligero: Permisos mínimos.
+
+--------------------------------------------------------------------------------
+Language: French (fr)
+Category: Outils de développement (Developer Tools)
+Edge Search Terms: CSS, Style, Injecter, Personnaliser, Thème, Apparence, Code
+
+Title:
+PagePalette - Custom CSS Injector
+
+Short Description (max 132 chars):
+Personnalisez vos sites préférés en injectant automatiquement des styles CSS via des règles URL. 100 % privé et hors ligne.
+
+Description:
+PagePalette est une extension légère qui vous permet d'appliquer du CSS personnalisé à n'importe quel site Web, du blocage de bannières à la création de thèmes sombres.
+
+Fonctionnalités :
+- URL Regex : Appliquez des styles via des expressions régulières.
+- Gestion facile : Plateforme de contrôle simple pour vos règles.
+- Application instantanée : Styles appliqués dès le chargement.
+- La vie privée avant tout : 100% hors ligne et sans suivi.
+- Léger : Permissions minimales requises.
+
+--------------------------------------------------------------------------------
+Language: Portuguese - Brazil (pt_BR)
+Category: Ferramentas de desenvolvimento (Developer Tools)
+Edge Search Terms: CSS, Estilo, Injetar, Personalizar, Tema, Sobrescrever, Design
+
+Title:
+PagePalette - Custom CSS Injector
+
+Short Description (max 132 chars):
+Personalize seus sites favoritos injetando estilos CSS automaticamente com base em regras de URL. 100% privado e offline.
+
+Description:
+PagePalette é uma extensão leve que permite aplicar estilos CSS personalizados em qualquer site. Útil para ocultar banners ou criar modos noturnos.
+
+Recursos:
+- Padrão URL com Regex: Aplique estilos usando Expressões Regulares.
+- Gerenciamento fácil: Página de opções limpa.
+- Instantâneo: Alterações aplicadas perfeitamente ao carregar.
+- Privacidade: 100% sem rastreamento ou dados.
+- Leve: Permissões mínimas.
+
+--------------------------------------------------------------------------------
+Language: Chinese - Simplified (zh_CN)
+Category: 开发者工具 (Developer Tools)
+Edge Search Terms: CSS, 样式, 注入, 自定义, 主题, 覆盖, 网页
+
+Title:
+PagePalette - 自定义 CSS 注入器
+
+Short Description (max 132 chars):
+通过配置 URL 规则，自动为喜欢的网站注入特定的 CSS 样式。100% 保护隐私并且全离线运行。
+
+Description:
+PagePalette 是一款轻量级扩展，可以让你为任何网站设置自定义 CSS 样式。无论是隐藏烦人的横幅、定制深色模式还是修改字体大小，PagePalette 都能帮助你实现。
+
+功能特点:
+- 正则表达式匹配: 依靠正则表达式轻松将样式应用到特定网页或域名。
+- 轻松管理: 简洁直观的选项页面。
+- 立即生效: 页面加载时自动应用样式。
+- 隐私至上: 100% 离线使用。毫无追踪。
+- 轻量级运行: 极少的权限要求。
+
+--------------------------------------------------------------------------------
+Language: Japanese (ja)
+Category: 開発者ツール (Developer Tools)
+Edge Search Terms: CSS, スタイル, 注入, カスタマイズ, テーマ, 上書き, デザイン
+
+Title:
+PagePalette - Custom CSS Injector
+
+Short Description (max 132 chars):
+URLルールに基づいて特定のCSSスタイルを自動的に注入することで、ウェブサイトをカスタマイズします。100%オフラインの実装！
+
+Description:
+PagePaletteは、任意のWebサイトにユーザー定義のCSSスタイルを適用できる軽量ブラウザ拡張機能です。鬱陶しいバナーを非表示にしたり、ダークモードを作成したり、フォントサイズを調整したりできます。
+
+機能の特徴:
+- Regex URL マッチング: 正規表現を使用してスタイルを適用します。
+- 簡単な管理: ルールを追加、編集、切り替えするための直感的なオプションページ。
+- 即時適用: ページのロードに合わせてシームレスに適用されます。
+- プライバシー保護: 完全オフライン。サーバーへデータを送信しません。
+- 軽量動作: 最小限の権限と最適化されたバックグラウンドスクリプト。
