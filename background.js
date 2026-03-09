@@ -1,9 +1,35 @@
 // PagePalette Background Script
 
-
 // State to track which tab has matched rules and their toggle status
 // Format: { tabId: { applicableRules: [...], hasEnabledRules: boolean } }
 const tabState = {};
+
+// Migration and initialization
+chrome.runtime.onInstalled.addListener(() => {
+  migrateSyncToLocal();
+});
+
+// Also check on startup to ensure migration happened if onInstalled was missed or for service worker restarts
+migrateSyncToLocal();
+
+function migrateSyncToLocal() {
+  // Check if rules exist in sync storage
+  chrome.storage.sync.get(['rules'], (syncData) => {
+    if (syncData.rules && syncData.rules.length > 0) {
+      // Check if local storage already has rules to avoid overwriting existing local data
+      chrome.storage.local.get(['rules'], (localData) => {
+        if (!localData.rules || localData.rules.length === 0) {
+          console.log('Migrating rules from sync to local storage...');
+          chrome.storage.local.set({ rules: syncData.rules }, () => {
+            // Optional: We could clear sync storage here, but keeping it as a backup is safer for now
+            // chrome.storage.sync.remove('rules');
+            console.log('Migration successful.');
+          });
+        }
+      });
+    }
+  });
+}
 
 // We evaluate rules when a tab is updated (e.g., finishes loading)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -25,7 +51,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 });
 
 function evaluateRulesForTab(tabId, url) {
-  chrome.storage.sync.get({ rules: [] }, (data) => {
+  chrome.storage.local.get({ rules: [] }, (data) => {
     const rules = data.rules;
     const applicableRules = [];
     
@@ -104,7 +130,7 @@ chrome.action.onClicked.addListener((tab) => {
   
   // If there are applicable rules for this page, toggle them globally
   if (state && state.applicableRules && state.applicableRules.length > 0) {
-    chrome.storage.sync.get({ rules: [] }, (data) => {
+    chrome.storage.local.get({ rules: [] }, (data) => {
       let rules = data.rules;
       const newEnabledState = !state.hasEnabledRules;
       
@@ -118,7 +144,7 @@ chrome.action.onClicked.addListener((tab) => {
       });
       
       // Save globally so it acts like clicking the toggle in settings
-      chrome.storage.sync.set({ rules: rules }, () => {
+      chrome.storage.local.set({ rules: rules }, () => {
         state.hasEnabledRules = newEnabledState;
         
         if (newEnabledState) {
@@ -165,3 +191,4 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
   delete tabState[tabId];
 });
+

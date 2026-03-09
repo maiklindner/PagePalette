@@ -81,7 +81,7 @@ function init() {
 
 // Load rules from storage
 function loadRules() {
-  chrome.storage.sync.get({ rules: [] }, (data) => {
+  chrome.storage.local.get({ rules: [] }, (data) => {
     allRules = data.rules;
     renderRules();
   });
@@ -227,7 +227,7 @@ function toggleRule(id, isEnabled) {
 
 // Dump to chrome.storage
 function saveToStorage(callback) {
-  chrome.storage.sync.set({ rules: allRules }, () => {
+  chrome.storage.local.set({ rules: allRules }, () => {
     if (callback) callback();
   });
 }
