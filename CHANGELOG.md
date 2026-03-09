@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2] - 2026-03-09
+
+### Changed
+- **UI Refinements**: The Export button now correctly reflects its disabled state visually when no rules are present.
+- **Project Structure**: Optimized internal directory structure for better maintainability.
+
+---
+
 ## [1.1] - 2026-03-09
 
 ### Added
@@ -11,7 +19,6 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Storage Migration**: Switched to a more robust local storage system. This allows for much larger CSS rules without hitting the old "quota exceeded" limits.
-- **Project Structure**: Cleaned up the internal directory structure for better maintainability.
 
 ---
 
