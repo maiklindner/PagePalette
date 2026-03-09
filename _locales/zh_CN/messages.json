@@ -58,5 +58,23 @@
   },
   "confirmDelete": {
     "message": "你确定要删除此规则吗？"
+  },
+  "optionsNameLabel": {
+    "message": "Rule Name (Optional)"
+  },
+  "optionsNamePlaceholder": {
+    "message": "e.g. Dark Mode for Example"
+  },
+  "optionsBtnExport": {
+    "message": "Export Rules"
+  },
+  "optionsBtnImport": {
+    "message": "Import Rules"
+  },
+  "optionsImportSuccess": {
+    "message": "Rules imported successfully."
+  },
+  "optionsImportError": {
+    "message": "Failed to import rules. Invalid file format."
   }
 }

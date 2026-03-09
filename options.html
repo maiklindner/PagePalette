@@ -28,8 +28,13 @@
       <!-- List of existing rules -->
       <section id="rulesSection">
         <div class="rules-header">
-          <h2>Your Rules</h2>
-          <button id="addNewBtn" class="primary-btn">+ Add New Rule</button>
+          <h2 id="yourRulesTitle">Your Rules</h2>
+          <div class="header-actions">
+            <button id="importBtn" class="secondary-btn">Import JSON</button>
+            <button id="exportBtn" class="secondary-btn">Export JSON</button>
+            <button id="addNewBtn" class="primary-btn">+ Add New Rule</button>
+          </div>
+          <input type="file" id="importFile" accept=".json" class="hidden">
         </div>
         <div id="rulesList" class="rules-list">
           <!-- Rule cards will be injected here via JS -->
@@ -41,9 +46,14 @@
         <h2 id="editorTitle">Edit Rule</h2>
         
         <div class="form-group">
-          <label for="ruleRegex">URL Regular Expression</label>
+          <label for="ruleName" id="labelRuleName">Rule Name (Optional)</label>
+          <input type="text" id="ruleName" placeholder="e.g. My Website Fix">
+        </div>
+        
+        <div class="form-group">
+          <label for="ruleRegex" id="labelRuleRegex">URL Regular Expression</label>
           <input type="text" id="ruleRegex" placeholder="e.g. .*example\.com.*">
-          <small class="hint">This determines which websites this CSS will be injected into.</small>
+          <small class="hint" id="hintRegex">This determines which websites this CSS will be injected into.</small>
         </div>
         
         <div class="form-group">

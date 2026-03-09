@@ -5,10 +5,15 @@ const rulesList = document.getElementById('rulesList');
 const addNewBtn = document.getElementById('addNewBtn');
 
 const editorTitle = document.getElementById('editorTitle');
+const ruleNameInput = document.getElementById('ruleName');
 const ruleRegexInput = document.getElementById('ruleRegex');
 const ruleCssInput = document.getElementById('ruleCss');
 const saveRuleBtn = document.getElementById('saveRuleBtn');
 const cancelRuleBtn = document.getElementById('cancelRuleBtn');
+
+const exportBtn = document.getElementById('exportBtn');
+const importBtn = document.getElementById('importBtn');
+const importFile = document.getElementById('importFile');
 
 // State
 let allRules = [];
@@ -53,6 +58,8 @@ function localizeHtmlPage() {
   document.getElementById('descText').textContent = getMessage('optionsDesc');
   document.querySelector('.rules-header h2').textContent = getMessage('optionsYourRules');
   document.getElementById('addNewBtn').textContent = getMessage('optionsAddNew');
+  document.getElementById('exportBtn').textContent = getMessage('optionsBtnExport');
+  document.getElementById('importBtn').textContent = getMessage('optionsBtnImport');
   
   if (!editingRuleId) {
     document.getElementById('editorTitle').textContent = getMessage('optionsAddNewRule');
@@ -60,9 +67,12 @@ function localizeHtmlPage() {
     document.getElementById('editorTitle').textContent = getMessage('optionsEditRule');
   }
   
-  document.querySelector('label[for="ruleRegex"]').textContent = getMessage('optionsRegexLabel');
+  document.getElementById('labelRuleName').textContent = getMessage('optionsNameLabel');
+  document.getElementById('ruleName').placeholder = getMessage('optionsNamePlaceholder');
+  
+  document.getElementById('labelRuleRegex').textContent = getMessage('optionsRegexLabel');
   document.getElementById('ruleRegex').placeholder = getMessage('optionsRegexPlaceholder');
-  document.querySelector('.hint').textContent = getMessage('optionsRegexHint');
+  document.getElementById('hintRegex').textContent = getMessage('optionsRegexHint');
   
   document.querySelector('label[for="ruleCss"]').textContent = getMessage('optionsCssLabel');
   document.getElementById('saveRuleBtn').textContent = getMessage('optionsBtnSave');
@@ -77,6 +87,10 @@ function init() {
   addNewBtn.addEventListener('click', openEditorForNew);
   cancelRuleBtn.addEventListener('click', closeEditor);
   saveRuleBtn.addEventListener('click', saveRule);
+  
+  exportBtn.addEventListener('click', exportRules);
+  importBtn.addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', importRules);
 }
 
 // Load rules from storage
@@ -102,10 +116,12 @@ function renderRules() {
     
     // Preview a snippet of CSS
     const cssPreview = rule.css.replace(/[\n\r]/g, ' ').substring(0, 80) + '...';
+    const displayName = rule.name || rule.urlRegex;
 
     card.innerHTML = `
       <div class="rule-info">
-        <div class="rule-regex">${escapeHTML(rule.urlRegex)}</div>
+        <div class="rule-regex">${escapeHTML(displayName)}</div>
+        ${rule.name ? `<div class="rule-css-preview">${escapeHTML(rule.urlRegex)}</div>` : ''}
         <div class="rule-css-preview">${escapeHTML(cssPreview)}</div>
       </div>
       <div class="rule-actions">
@@ -138,6 +154,7 @@ function renderRules() {
 function openEditorForNew() {
   editingRuleId = null;
   editorTitle.textContent = getMessage('optionsAddNewRule');
+  ruleNameInput.value = '';
   ruleRegexInput.value = '';
   ruleCssInput.value = '';
   
@@ -152,6 +169,7 @@ function openEditorForEdit(id) {
 
   editingRuleId = id;
   editorTitle.textContent = getMessage('optionsEditRule');
+  ruleNameInput.value = rule.name || '';
   ruleRegexInput.value = rule.urlRegex;
   ruleCssInput.value = rule.css;
   
@@ -167,6 +185,7 @@ function closeEditor() {
 
 // Save the rule
 function saveRule() {
+  const nameValue = ruleNameInput.value.trim();
   const regexValue = ruleRegexInput.value.trim();
   const cssValue = ruleCssInput.value.trim();
 
@@ -187,6 +206,7 @@ function saveRule() {
     // Edit existing
     const ruleIndex = allRules.findIndex(r => r.id === editingRuleId);
     if (ruleIndex !== -1) {
+      allRules[ruleIndex].name = nameValue;
       allRules[ruleIndex].urlRegex = regexValue;
       allRules[ruleIndex].css = cssValue;
     }
@@ -194,6 +214,7 @@ function saveRule() {
     // Create new
     allRules.push({
       id: "rule_" + Date.now().toString(),
+      name: nameValue,
       urlRegex: regexValue,
       css: cssValue,
       enabled: true
@@ -230,6 +251,65 @@ function saveToStorage(callback) {
   chrome.storage.local.set({ rules: allRules }, () => {
     if (callback) callback();
   });
+}
+
+// Export rules to JSON
+function exportRules() {
+  const dataStr = JSON.stringify(allRules, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pagepalette-rules-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  
+  URL.revokeObjectURL(url);
+}
+
+// Import rules from JSON
+function importRules(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const importedRules = JSON.parse(event.target.result);
+      
+      if (!Array.isArray(importedRules)) {
+        throw new Error('Invalid format');
+      }
+
+      // Basic validation and merging
+      // We'll append them, but you could also overwrite
+      // For now, let's merge and ensure unique IDs if needed, 
+      // but keeping original IDs is also fine if they don't collide.
+      // Actually, it's safer to generate new IDs if they collide or just overwrite.
+      // The user probably wants to ADD these rules.
+      
+      importedRules.forEach(rule => {
+        if (rule.urlRegex && rule.css) {
+          // If ID exists, generate new one to avoid collisions
+          if (!rule.id || allRules.some(r => r.id === rule.id)) {
+            rule.id = "rule_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+          }
+          allRules.push(rule);
+        }
+      });
+
+      saveToStorage(() => {
+        renderRules();
+        alert(getMessage('optionsImportSuccess'));
+      });
+    } catch (err) {
+      console.error(err);
+      alert(getMessage('optionsImportError'));
+    }
+    // Reset file input
+    importFile.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // Utility: Prevent XSS in preview

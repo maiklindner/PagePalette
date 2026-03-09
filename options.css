@@ -97,6 +97,11 @@ p {
   margin-bottom: var(--spacing-md);
 }
 
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
 .rules-list {
   display: flex;
   flex-direction: column;
