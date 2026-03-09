@@ -12,9 +12,11 @@
 ## Features
 
 - **Custom Styles:** Add your own CSS to any website to hide annoying elements, change colors, or adjust layouts.
+- **Rule Naming:** Organize your rules by giving them descriptive names.
 - **Regex Support:** Match exact URLs or broad domains using Regular Expressions.
+- **Export & Import:** Easily backup your rules or transfer them between browsers via JSON files.
 - **Easy Toggle:** Quickly disable or enable rules without deleting them.
-- **Privacy First:** 100% offline. No data is sent to external servers. Your synced rules never leave your browser account.
+- **Privacy First:** 100% offline. No data is sent to external servers. Your synced settings never leave your browser account.
 
 ## Installation
 
@@ -36,9 +38,16 @@ You have three options to install PagePalette:
 
 1. Click on the extension icon in your browser toolbar to open the **Options Page**.
 2. Click **+ Add New Rule**.
-3. Under **URL Regular Expression**, type the pattern for the sites you want to style (e.g., `.*github\.com.*`).
-4. Under **Custom CSS**, type your CSS (e.g., `body { background-color: #222 !important; }`).
-5. Click **Save** and reload your target website to see the changes.
+3. (Optional) Enter a **Name** for your rule to keep things organized.
+4. Under **URL Regular Expression**, type the pattern for the sites you want to style (e.g., `.*github\.com.*`).
+5. Under **Custom CSS**, type your CSS (e.g., `body { background-color: #222 !important; }`).
+6. Click **Save** and reload your target website to see the changes.
+
+### Managing Rules
+
+- **Toggle**: Use the switch next to a rule to enable or disable it instantly.
+- **Export**: Click **Export JSON** to save all your rules to a file.
+- **Import**: Click **Import JSON** to restore rules from a previously saved file.
 
 ## License
 
