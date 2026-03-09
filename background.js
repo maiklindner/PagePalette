@@ -58,7 +58,7 @@ function evaluateRulesForTab(tabId, url) {
           if (rule.enabled) {
             count++;
             chrome.scripting.executeScript({
-              target: { tabId: tabId },
+              target: { tabId: tabId, allFrames: true },
               func: (ruleId, cssText) => {
                 let style = document.getElementById('pagepalette-' + ruleId);
                 if (!style) {
@@ -125,7 +125,7 @@ chrome.action.onClicked.addListener((tab) => {
           // Re-inject styles
           state.applicableRules.forEach(rule => {
             chrome.scripting.executeScript({
-              target: { tabId: tab.id },
+              target: { tabId: tab.id, allFrames: true },
               func: (ruleId, cssText) => {
                 let style = document.getElementById('pagepalette-' + ruleId);
                 if (!style) {
@@ -143,7 +143,7 @@ chrome.action.onClicked.addListener((tab) => {
           // Remove styles
           state.applicableRules.forEach(rule => {
             chrome.scripting.executeScript({
-              target: { tabId: tab.id },
+              target: { tabId: tab.id, allFrames: true },
               func: (ruleId) => {
                 const style = document.getElementById('pagepalette-' + ruleId);
                 if (style) style.remove();
