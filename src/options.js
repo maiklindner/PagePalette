@@ -107,8 +107,10 @@ function renderRules() {
   
   if (allRules.length === 0) {
     rulesList.innerHTML = '<p>' + escapeHTML(getMessage('optionsNoRules')) + '</p>';
+    exportBtn.disabled = true;
     return;
   }
+  exportBtn.disabled = false;
 
   allRules.forEach(rule => {
     const card = document.createElement('div');
