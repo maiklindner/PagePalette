@@ -213,7 +213,7 @@ button:disabled {
 
 @media (prefers-color-scheme: dark) {
   .primary-btn {
-    color: #1a73e8; /* Dark mode tweaks */
+    color: white; /* Ensure contrast on blue background */
   }
 }
 
