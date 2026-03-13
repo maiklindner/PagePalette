@@ -1,10 +1,15 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
+  "version": "1.2.1",
+  "description": "__MSG_extDescription__",
   "author": "Maik Lindner",
-  "version": "1.2",
-  "description": "__MSG_extDesc__",
   "default_locale": "en",
+  "icons": {
+    "16": "icons/logo16.png",
+    "48": "icons/logo48.png",
+    "128": "icons/logo128.png"
+  },
   "action": {
     "default_icon": {
       "16": "icons/icon16.png",
@@ -12,17 +17,12 @@
       "128": "icons/icon128.png"
     }
   },
-  "icons": {
-    "16": "icons/logo16.png",
-    "48": "icons/logo48.png",
-    "128": "icons/logo128.png"
+  "background": {
+    "service_worker": "background.js"
   },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
-  },
-  "background": {
-    "service_worker": "background.js"
   },
   "permissions": [
     "storage",

@@ -2,7 +2,7 @@
   "extName": {
     "message": "PagePalette"
   },
-  "extDesc": {
+  "extDescription": {
     "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
   },
   "optionsTitle": {
