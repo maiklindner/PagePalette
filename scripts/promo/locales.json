@@ -1,0 +1,91 @@
+{
+  "locales": {
+    "en": {
+      "voice": "en-US-Chirp3-HD-Enceladus",
+      "flag": "--lang=en-US",
+      "script": [
+        "Style any website automatically with your own custom CSS.",
+        "Organize rules with names and powerful Regex matching.",
+        "Ultimate privacy: rules are stored locally and run instantly.",
+        "Quickly import and export rules. Simple and 100% private.",
+        "PagePalette"
+      ],
+      "phonation": {
+        "PagePalette": "ˈpeɪdʒˌpælət"
+      },
+      "features": ["Custom CSS", "Regex Rules", "100% Private"]
+    },
+    "de": {
+      "voice": "de-DE-Chirp3-HD-Enceladus",
+      "flag": "--lang=de",
+      "script": [
+        " Verwalte das Design jeder Website mit eigenem CSS.",
+        "Organisiere Regeln mit Namen und Regex für volle Kontrolle.",
+        "Maximale Privatsphäre: Regeln bleiben lokal und sicher.",
+        "Import und Export: Blitzschnell, einfach und 100% privat.",
+        "PagePalette"
+      ],
+      "features": ["Custom CSS", "Regex Regeln", "Privat & Sicher"]
+    },
+    "ja": {
+      "voice": "ja-JP-Chirp3-HD-Enceladus",
+      "flag": "--lang=ja",
+      "script": [
+        "CSSでサイトを自在に変更。",
+        "名前と正規表現で表示管理。",
+        "ローカル実行で究極の秘密。",
+        "高速エクスポート、完全に秘密。",
+        "PagePalette"
+      ],
+      "features": ["カスタムCSS", "正規表現ルール", "プライバシー重視"]
+    },
+    "es": {
+      "voice": "es-ES-Chirp3-HD-Enceladus",
+      "flag": "--lang=es",
+      "script": [
+        "Estiliza cualquier sitio web automáticamente con CSS personalizado.",
+        "Organiza reglas con nombres y potentes expresiones regulares.",
+        "Privacidad total: tus reglas se guardan localmente y se ejecutan al instante.",
+        "Exporta e importa reglas al instante. Rápido y 100% privado.",
+        "PagePalette"
+      ],
+      "features": ["CSS Personalizado", "Reglas Regex", "100% Privado"]
+    },
+    "fr": {
+      "voice": "fr-FR-Chirp3-HD-Enceladus",
+      "flag": "--lang=fr",
+      "script": [
+        "Personnalisez n'importe quel site web avec votre propre CSS.",
+        "Organisez vos règles avec des noms et des expressions régulières.",
+        "Confidentialité totale : vos règles sont stockées localement et exécutées.",
+        "Exportez et importez vos règles en un clic. 100% privé.",
+        "PagePalette"
+      ],
+      "features": ["CSS Personnalisé", "Règles Regex", "Privé & Rapide"]
+    },
+    "pt_BR": {
+      "voice": "pt-BR-Chirp3-HD-Enceladus",
+      "flag": "--lang=pt-BR",
+      "script": [
+        "Personalize qualquer site automaticamente com CSS customizado.",
+        "Organize regras com nomes e expressões regulares poderosas.",
+        "Privacidade máxima: as regras são locais e processadas instantaneamente.",
+        "Exporte e importe regras rapidamente. Rápido e 100% privado.",
+        "PagePalette"
+      ],
+      "features": ["CSS Customizado", "Regras Regex", "Privacidade"]
+    },
+    "zh_CN": {
+      "voice": "cmn-CN-Chirp3-HD-Enceladus",
+      "flag": "--lang=zh-CN",
+      "script": [
+        "CSS 自动转换任何网站。",
+        "名称与正则规则，深度控制。",
+        "本地运行，极速稳定。",
+        "快速导出，100% 私密。",
+        "PagePalette"
+      ],
+      "features": ["自定义 CSS", "正则规则", "100% 私密"]
+    }
+  }
+}
