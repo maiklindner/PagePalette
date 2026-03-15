@@ -5,6 +5,7 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const locales = require('./locales.json').locales;
 const crypto = require('crypto');
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function getVoPath(audioDir, localeKey, index, text) {
     const localeData = locales[localeKey];
@@ -71,7 +72,7 @@ async function recordPromo(localeKey) {
     await page.setViewport({ width: 1280, height: 720 });
 
     // Wait for extension to load
-    await new Promise(r => setTimeout(r, 2000));
+    await delay(2000);
     const targets = await browser.targets();
     const extensionTarget = targets.find(t => t.url().startsWith('chrome-extension://'));
     if (!extensionTarget) {
@@ -102,7 +103,7 @@ async function recordPromo(localeKey) {
     
     // MANDATORY RELOAD to fix initial English flash
     await page.reload({ waitUntil: 'networkidle2' });
-    await page.waitForTimeout(500);
+    await delay(500);
 
     // Start Intro
     await page.goto('about:blank');
@@ -124,6 +125,8 @@ async function recordPromo(localeKey) {
         document.body.appendChild(logo);
     });
 
+    console.log('Stabilizing Chromium (5s wait)...');
+    await delay(5000);
     console.log('Recording started...');
     await recorder.start(videoPath);
     const recStartTime = Date.now();
@@ -132,7 +135,7 @@ async function recordPromo(localeKey) {
         const elapsed = (Date.now() - recStartTime) / 1000;
         const remaining = targetSeconds - elapsed;
         if (remaining > 0) {
-            await page.waitForTimeout(remaining * 1000);
+            await delay(remaining * 1000);
         }
     };
 
@@ -156,30 +159,30 @@ async function recordPromo(localeKey) {
     await page.waitForSelector('#addNewBtn');
     await page.click('#addNewBtn');
     await page.waitForSelector('#editorSection:not(.hidden)');
-    await page.waitForTimeout(500);
+    await delay(500);
     
     await page.type('#ruleName', 'Premium Dark Mode', { delay: 40 });
     await page.type('#ruleRegex', '.*example\\.com.*', { delay: 20 });
     await page.type('#ruleCss', 'body { background: #000 !important; color: #fff; }', { delay: 10 });
     
-    await page.waitForTimeout(500);
+    await delay(500);
     await page.click('#saveRuleBtn');
     await waitToMark(10); // Phase 1 ends at 10.0s
 
     // --- Phase 2: Theme Switch & Management (Dark Mode) ---
     console.log('Phase 2: Theme Switch & Management (Dark Mode)');
     await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
-    await page.waitForTimeout(1000);
+    await delay(1000);
     
     // Toggle rule to show interaction in Dark Mode
     await page.waitForSelector('.rules-list .slider');
     await page.click('.rules-list .slider'); // Toggle
-    await page.waitForTimeout(1500);
+    await delay(1500);
     await page.click('.rules-list .slider'); // Toggle back
     
-    await page.waitForTimeout(1000);
+    await delay(1000);
     await page.click('#exportBtn');
-    await page.waitForTimeout(1500);
+    await delay(1500);
     await waitToMark(18); // Phase 2 ends at 18.0s
 
     // --- Phase 3: Premium Overlay & USP Cycle ---
@@ -260,11 +263,11 @@ async function recordPromo(localeKey) {
     const offsets = [2.5, 8.0, 13.0, 18.5, 25.0];
     const masterGain = 2.0;
 
-    let filterComplex = `[1:a]volume=0.8[bg_music];`;
+    let filterComplex = `[1:a]volume=0.7[bg_music];`;
     let voMixInputStr = '';
     for (let i = 0; i < localeData.script.length; i++) {
-        const delay = Math.round(offsets[i] * 1000);
-        filterComplex += `[${i + 2}:a]adelay=${delay}|${delay}[v${i}];`;
+        const d = Math.round(offsets[i] * 1000);
+        filterComplex += `[${i + 2}:a]adelay=${d}|${d}[v${i}];`;
         voMixInputStr += `[v${i}]`;
     }
     filterComplex += `${voMixInputStr}amix=inputs=${localeData.script.length}:normalize=0:dropout_transition=0,volume=${masterGain * localeData.script.length}[allvo_raw];`;
