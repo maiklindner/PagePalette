@@ -52,7 +52,15 @@ async function run() {
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
   const force = process.argv.includes('--force');
-  const targetLocales = Object.keys(locales);
+  let targetLocales = Object.keys(locales);
+
+  // LOCALE FILTERING
+  const localeArg = process.argv.find(arg => arg.startsWith('--locales=') || arg.startsWith('-l='));
+  if (localeArg) {
+    const requested = localeArg.split('=')[1].split(',');
+    targetLocales = targetLocales.filter(l => requested.includes(l));
+    console.log(`Filtering for locales: ${targetLocales.join(', ')}`);
+  }
 
   for (const lang of targetLocales) {
     const localeData = locales[lang];
