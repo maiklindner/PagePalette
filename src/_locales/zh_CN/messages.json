@@ -60,21 +60,21 @@
     "message": "你确定要删除此规则吗？"
   },
   "optionsNameLabel": {
-    "message": "Rule Name (Optional)"
+    "message": "规则名称 (可选)"
   },
   "optionsNamePlaceholder": {
-    "message": "e.g. Dark Mode for Example"
+    "message": "例如：示例的深色模式"
   },
   "optionsBtnExport": {
-    "message": "Export Rules"
+    "message": "导出规则"
   },
   "optionsBtnImport": {
-    "message": "Import Rules"
+    "message": "导入规则"
   },
   "optionsImportSuccess": {
-    "message": "Rules imported successfully."
+    "message": "规则导入成功。"
   },
   "optionsImportError": {
-    "message": "Failed to import rules. Invalid file format."
+    "message": "导入规则失败。文件格式无效。"
   }
 }

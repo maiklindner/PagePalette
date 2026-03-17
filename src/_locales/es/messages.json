@@ -60,21 +60,21 @@
     "message": "¿Estás seguro de querer eliminar esta regla?"
   },
   "optionsNameLabel": {
-    "message": "Rule Name (Optional)"
+    "message": "Nombre de la regla (Opcional)"
   },
   "optionsNamePlaceholder": {
-    "message": "e.g. Dark Mode for Example"
+    "message": "p. ej. Modo oscuro para ejemplo"
   },
   "optionsBtnExport": {
-    "message": "Export Rules"
+    "message": "Exportar Reglas"
   },
   "optionsBtnImport": {
-    "message": "Import Rules"
+    "message": "Importar Reglas"
   },
   "optionsImportSuccess": {
-    "message": "Rules imported successfully."
+    "message": "Reglas importadas con éxito."
   },
   "optionsImportError": {
-    "message": "Failed to import rules. Invalid file format."
+    "message": "Error al importar reglas. Formato de archivo inválido."
   }
 }

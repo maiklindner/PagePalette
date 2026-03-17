@@ -60,21 +60,21 @@
     "message": "このルールを削除してもよろしいですか？"
   },
   "optionsNameLabel": {
-    "message": "Rule Name (Optional)"
+    "message": "ルール名 (オプション)"
   },
   "optionsNamePlaceholder": {
-    "message": "e.g. Dark Mode for Example"
+    "message": "例: サンプルのダークモード"
   },
   "optionsBtnExport": {
-    "message": "Export Rules"
+    "message": "ルールをエクスポート"
   },
   "optionsBtnImport": {
-    "message": "Import Rules"
+    "message": "ルールをインポート"
   },
   "optionsImportSuccess": {
-    "message": "Rules imported successfully."
+    "message": "ルールのインポートに成功しました。"
   },
   "optionsImportError": {
-    "message": "Failed to import rules. Invalid file format."
+    "message": "ルールのインポートに失敗しました。無効なファイル形式です。"
   }
 }

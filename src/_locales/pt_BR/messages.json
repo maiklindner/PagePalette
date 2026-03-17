@@ -60,21 +60,21 @@
     "message": "Tem certeza de que deseja excluir esta regra?"
   },
   "optionsNameLabel": {
-    "message": "Rule Name (Optional)"
+    "message": "Nome da Regra (Opcional)"
   },
   "optionsNamePlaceholder": {
-    "message": "e.g. Dark Mode for Example"
+    "message": "ex. Modo Escuro para Exemplo"
   },
   "optionsBtnExport": {
-    "message": "Export Rules"
+    "message": "Exportar Regras"
   },
   "optionsBtnImport": {
-    "message": "Import Rules"
+    "message": "Importar Regras"
   },
   "optionsImportSuccess": {
-    "message": "Rules imported successfully."
+    "message": "Regras importadas com sucesso."
   },
   "optionsImportError": {
-    "message": "Failed to import rules. Invalid file format."
+    "message": "Falha ao importar regras. Formato de arquivo inválido."
   }
 }
