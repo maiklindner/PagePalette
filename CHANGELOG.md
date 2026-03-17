@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3] - 2026-03-17
+
+### Added
+- **Rule Reordering**: You can now reorder your CSS rules directly on the options page using drag and drop. 
+- **Auto-Save**: The new order is automatically saved when you drop a rule.
+
 ## [1.2] - 2026-03-09
 
 ### Changed
