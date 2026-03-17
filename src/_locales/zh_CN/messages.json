@@ -56,8 +56,11 @@
   "errorInvalidRegex": {
     "message": "无效的正则表达式。"
   },
-  "confirmDelete": {
-    "message": "你确定要删除此规则吗？"
+  "optionsRuleDeleted": {
+    "message": "规则已删除。"
+  },
+  "optionsUndo": {
+    "message": "撤销"
   },
   "optionsNameLabel": {
     "message": "规则名称 (可选)"

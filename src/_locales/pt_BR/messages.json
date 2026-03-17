@@ -56,8 +56,11 @@
   "errorInvalidRegex": {
     "message": "Expressão Regular Inválida."
   },
-  "confirmDelete": {
-    "message": "Tem certeza de que deseja excluir esta regra?"
+  "optionsRuleDeleted": {
+    "message": "Regra excluída."
+  },
+  "optionsUndo": {
+    "message": "Desfazer"
   },
   "optionsNameLabel": {
     "message": "Nome da Regra (Opcional)"

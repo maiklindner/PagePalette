@@ -19,6 +19,8 @@ const importFile = document.getElementById('importFile');
 let allRules = [];
 let editingRuleId = null;
 let currentMessages = {};
+let lastDeletedRule = null;
+let deleteTimeout = null;
 
 // Utility: Ensure all rules have IDs and resolve duplicates
 function ensureUniqueIds(rules) {
@@ -120,6 +122,10 @@ function localizeHtmlPage() {
   document.querySelector('label[for="ruleCss"]').textContent = getMessage('optionsCssLabel');
   document.getElementById('saveRuleBtn').textContent = getMessage('optionsBtnSave');
   document.getElementById('cancelRuleBtn').textContent = getMessage('optionsBtnCancel');
+  
+  // Undo Toast
+  document.getElementById('toastMessage').textContent = getMessage('optionsRuleDeleted');
+  document.getElementById('undoBtn').textContent = getMessage('optionsUndo');
 }
 
 // Initialize
@@ -131,9 +137,10 @@ function init() {
   cancelRuleBtn.addEventListener('click', closeEditor);
   saveRuleBtn.addEventListener('click', saveRule);
   
-  exportBtn.addEventListener('click', exportRules);
   importBtn.addEventListener('click', () => importFile.click());
   importFile.addEventListener('change', importRules);
+  
+  document.getElementById('undoBtn').addEventListener('click', undoDelete);
 }
 
 // Load rules from storage
@@ -289,14 +296,56 @@ function saveRule() {
   });
 }
 
-// Delete a rule
+// Delete a rule with Undo
 function deleteRule(id) {
-  if (confirm(getMessage('confirmDelete'))) {
-    allRules = allRules.filter(r => r.id !== id);
-    saveToStorage(() => {
-      renderRules();
-    });
+  const index = allRules.findIndex(r => r.id === id);
+  if (index === -1) return;
+
+  // Clear previous timeout if any
+  if (deleteTimeout) {
+    clearTimeout(deleteTimeout);
   }
+
+  // Save for undo
+  lastDeletedRule = {
+    rule: { ...allRules[index] },
+    index: index
+  };
+
+  // Remove immediately from UI
+  allRules.splice(index, 1);
+  renderRules();
+  saveToStorage();
+
+  // Show toast
+  const toast = document.getElementById('undoToast');
+  toast.classList.remove('hidden');
+
+  // Auto-hide toast and finalize deletion
+  deleteTimeout = setTimeout(() => {
+    toast.classList.add('hidden');
+    lastDeletedRule = null;
+    deleteTimeout = null;
+  }, 5000);
+}
+
+// Undo the deletion
+function undoDelete() {
+  if (!lastDeletedRule) return;
+
+  // Clear timeout and hide toast
+  if (deleteTimeout) {
+    clearTimeout(deleteTimeout);
+    deleteTimeout = null;
+  }
+  document.getElementById('undoToast').classList.add('hidden');
+
+  // Restore rule
+  allRules.splice(lastDeletedRule.index, 0, lastDeletedRule.rule);
+  lastDeletedRule = null;
+  
+  renderRules();
+  saveToStorage();
 }
 
 // Toggle a rule on/off

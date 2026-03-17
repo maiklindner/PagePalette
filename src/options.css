@@ -292,3 +292,54 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(20px);
 }
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  .toast {
+    background-color: var(--primary-color);
+    color: white;
+  }
+}
+
+.toast.hidden {
+  display: none;
+}
+
+#undoBtn {
+  background-color: white;
+  color: #1f2937;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+#undoBtn:hover {
+  background-color: #f3f4f6;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}

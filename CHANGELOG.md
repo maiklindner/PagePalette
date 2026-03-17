@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4] - 2026-03-17
+
+### Added
+- **Undo Deletion**: Replaced the deletion confirmation dialog with a modern "Undo" toast, allowing you to quickly restore accidentally deleted rules.
+
+### Fixed
+- **Robust Multi-Rule Toggle**: Fixed an issue where the icon click would only toggle one of multiple matching rules.
+- **Hibernation Resilience**: The extension now works reliably even after the Service Worker hibernates.
+- **Data Integrity**: Automatically fixes duplicate or missing rule IDs in legacy data for a smoother experience.
+
 ## [1.3] - 2026-03-17
 
 ### Added
