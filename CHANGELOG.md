@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-03-17
+
+### Fixed
+- **Console Error**: Fixed a `TypeError` in the options page where it couldn't find the `undoBtn` element after it was renamed to `toastUndoBtn`.
+
 ## [1.4] - 2026-03-17
 
 ### Added
