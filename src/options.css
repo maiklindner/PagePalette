@@ -322,14 +322,22 @@ input:checked + .slider:before {
   display: none;
 }
 
-#undoBtn {
+.toast-undo-btn {
   background-color: white;
   color: #1f2937;
   padding: 4px 12px;
   font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
 }
 
-#undoBtn:hover {
+.toast-undo-btn.hidden {
+  display: none;
+}
+
+.toast-undo-btn:hover {
   background-color: #f3f4f6;
 }
 

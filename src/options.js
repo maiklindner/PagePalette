@@ -20,7 +20,7 @@ let allRules = [];
 let editingRuleId = null;
 let currentMessages = {};
 let lastDeletedRule = null;
-let deleteTimeout = null;
+let toastTimeout = null;
 
 // Utility: Ensure all rules have IDs and resolve duplicates
 function ensureUniqueIds(rules) {
@@ -125,7 +125,7 @@ function localizeHtmlPage() {
   
   // Undo Toast
   document.getElementById('toastMessage').textContent = getMessage('optionsRuleDeleted');
-  document.getElementById('undoBtn').textContent = getMessage('optionsUndo');
+  document.getElementById('toastUndoBtn').textContent = getMessage('optionsUndo');
 }
 
 // Initialize
@@ -137,10 +137,11 @@ function init() {
   cancelRuleBtn.addEventListener('click', closeEditor);
   saveRuleBtn.addEventListener('click', saveRule);
   
+  exportBtn.addEventListener('click', exportRules);
   importBtn.addEventListener('click', () => importFile.click());
   importFile.addEventListener('change', importRules);
   
-  document.getElementById('undoBtn').addEventListener('click', undoDelete);
+  document.getElementById('toastUndoBtn').addEventListener('click', undoDelete);
 }
 
 // Load rules from storage
@@ -259,7 +260,7 @@ function saveRule() {
   const cssValue = ruleCssInput.value.trim();
 
   if (!regexValue || !cssValue) {
-    alert(getMessage('errorMissingFields'));
+    showToast(getMessage('errorMissingFields'));
     return;
   }
 
@@ -267,7 +268,7 @@ function saveRule() {
   try {
     new RegExp(regexValue);
   } catch (e) {
-    alert(getMessage('errorInvalidRegex'));
+    showToast(getMessage('errorInvalidRegex'));
     return;
   }
 
@@ -296,15 +297,47 @@ function saveRule() {
   });
 }
 
+// Show a unified toast notification
+function showToast(message, duration = 5000, undoAction = null) {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  const toastUndoBtn = document.getElementById('toastUndoBtn');
+
+  // Clear previous timeout
+  if (toastTimeout) {
+    clearTimeout(toastTimeout);
+  }
+
+  toastMessage.textContent = message;
+  
+  if (undoAction) {
+    toastUndoBtn.classList.remove('hidden');
+    toastUndoBtn.onclick = () => {
+      undoAction();
+      hideToast();
+    };
+  } else {
+    toastUndoBtn.classList.add('hidden');
+  }
+
+  toast.classList.remove('hidden');
+
+  toastTimeout = setTimeout(hideToast, duration);
+}
+
+function hideToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('hidden');
+  if (toastTimeout) {
+    clearTimeout(toastTimeout);
+    toastTimeout = null;
+  }
+}
+
 // Delete a rule with Undo
 function deleteRule(id) {
   const index = allRules.findIndex(r => r.id === id);
   if (index === -1) return;
-
-  // Clear previous timeout if any
-  if (deleteTimeout) {
-    clearTimeout(deleteTimeout);
-  }
 
   // Save for undo
   lastDeletedRule = {
@@ -317,28 +350,13 @@ function deleteRule(id) {
   renderRules();
   saveToStorage();
 
-  // Show toast
-  const toast = document.getElementById('undoToast');
-  toast.classList.remove('hidden');
-
-  // Auto-hide toast and finalize deletion
-  deleteTimeout = setTimeout(() => {
-    toast.classList.add('hidden');
-    lastDeletedRule = null;
-    deleteTimeout = null;
-  }, 5000);
+  // Show toast with undo
+  showToast(getMessage('optionsRuleDeleted'), 5000, undoDelete);
 }
 
 // Undo the deletion
 function undoDelete() {
   if (!lastDeletedRule) return;
-
-  // Clear timeout and hide toast
-  if (deleteTimeout) {
-    clearTimeout(deleteTimeout);
-    deleteTimeout = null;
-  }
-  document.getElementById('undoToast').classList.add('hidden');
 
   // Restore rule
   allRules.splice(lastDeletedRule.index, 0, lastDeletedRule.rule);
@@ -413,11 +431,11 @@ function importRules(e) {
 
       saveToStorage(() => {
         renderRules();
-        alert(getMessage('optionsImportSuccess'));
+        showToast(getMessage('optionsImportSuccess'));
       });
     } catch (err) {
       console.error(err);
-      alert(getMessage('optionsImportError'));
+      showToast(getMessage('optionsImportError'));
     }
     // Reset file input
     importFile.value = '';
