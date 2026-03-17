@@ -20,6 +20,21 @@ let allRules = [];
 let editingRuleId = null;
 let currentMessages = {};
 
+// Utility: Ensure all rules have IDs and resolve duplicates
+function ensureUniqueIds(rules) {
+  let changed = false;
+  const seenIds = new Set();
+  
+  rules.forEach(rule => {
+    if (!rule.id || seenIds.has(rule.id)) {
+      rule.id = "rule_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+      changed = true;
+    }
+    seenIds.add(rule.id);
+  });
+  return changed;
+}
+
 // Drag and Drop Logic
 rulesList.addEventListener('dragover', e => {
   e.preventDefault();
@@ -125,6 +140,9 @@ function init() {
 function loadRules() {
   chrome.storage.local.get({ rules: [] }, (data) => {
     allRules = data.rules;
+    if (ensureUniqueIds(allRules)) {
+      saveToStorage();
+    }
     renderRules();
   });
 }
@@ -334,13 +352,15 @@ function importRules(e) {
       
       importedRules.forEach(rule => {
         if (rule.urlRegex && rule.css) {
-          // If ID exists, generate new one to avoid collisions
-          if (!rule.id || allRules.some(r => r.id === rule.id)) {
+          // If ID exists and collides, generate new one
+          if (rule.id && allRules.some(r => r.id === rule.id)) {
             rule.id = "rule_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
           }
           allRules.push(rule);
         }
       });
+      
+      ensureUniqueIds(allRules);
 
       saveToStorage(() => {
         renderRules();

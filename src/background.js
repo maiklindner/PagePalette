@@ -4,6 +4,24 @@
 // Format: { tabId: { applicableRules: [...], hasEnabledRules: boolean } }
 const tabState = {};
 
+/**
+ * Ensures all rules have a unique ID. 
+ * Migrates legacy rules without IDs and resolves duplicate IDs.
+ */
+function ensureUniqueIds(rules) {
+  let changed = false;
+  const seenIds = new Set();
+  
+  rules.forEach(rule => {
+    if (!rule.id || seenIds.has(rule.id)) {
+      rule.id = "rule_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+      changed = true;
+    }
+    seenIds.add(rule.id);
+  });
+  return changed;
+}
+
 // Migration and initialization
 chrome.runtime.onInstalled.addListener(() => {
   migrateSyncToLocal();
@@ -50,24 +68,32 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
   });
 });
 
+function getMatchingRules(rules, url) {
+  const applicableRules = [];
+  rules.forEach(rule => {
+    if (rule.urlRegex && rule.css) {
+      try {
+        const regex = new RegExp(rule.urlRegex, 'i');
+        if (regex.test(url)) {
+          applicableRules.push(rule);
+        }
+      } catch (e) {
+        console.error(`Invalid regex in rule ${rule.id}: ${rule.urlRegex}`, e);
+      }
+    }
+  });
+  return applicableRules;
+}
+
 function evaluateRulesForTab(tabId, url) {
   chrome.storage.local.get({ rules: [] }, (data) => {
     const rules = data.rules;
-    const applicableRules = [];
-    
-    // Find ALL rules that match the regex, regardless of 'enabled' state
-    rules.forEach(rule => {
-      if (rule.urlRegex && rule.css) {
-        try {
-          const regex = new RegExp(rule.urlRegex, 'i');
-          if (regex.test(url)) {
-            applicableRules.push(rule);
-          }
-        } catch (e) {
-          console.error(`Invalid regex in rule ${rule.id}: ${rule.urlRegex}`, e);
-        }
-      }
-    });
+    const rulesChanged = ensureUniqueIds(rules);
+    if (rulesChanged) {
+      chrome.storage.local.set({ rules: rules });
+    }
+
+    const applicableRules = getMatchingRules(rules, url);
 
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
@@ -78,29 +104,38 @@ function evaluateRulesForTab(tabId, url) {
         hasEnabledRules: hasEnabledRules
       };
       
+      // Always process all applicable rules: inject if enabled, remove if disabled
+      applicableRules.forEach(rule => {
+        if (rule.enabled) {
+          chrome.scripting.executeScript({
+            target: { tabId: tabId, allFrames: true },
+            func: (ruleId, cssText) => {
+              let style = document.getElementById('pagepalette-' + ruleId);
+              if (!style) {
+                style = document.createElement('style');
+                style.id = 'pagepalette-' + ruleId;
+                (document.head || document.documentElement).appendChild(style);
+              }
+              style.textContent = cssText;
+            },
+            args: [rule.id, rule.css]
+          }).catch(() => {});
+        } else {
+          chrome.scripting.executeScript({
+            target: { tabId: tabId, allFrames: true },
+            func: (ruleId) => {
+              const style = document.getElementById('pagepalette-' + ruleId);
+              if (style) style.remove();
+            },
+            args: [rule.id]
+          }).catch(() => {});
+        }
+      });
+
       if (hasEnabledRules) {
-        let count = 0;
-        applicableRules.forEach(rule => {
-          if (rule.enabled) {
-            count++;
-            chrome.scripting.executeScript({
-              target: { tabId: tabId, allFrames: true },
-              func: (ruleId, cssText) => {
-                let style = document.getElementById('pagepalette-' + ruleId);
-                if (!style) {
-                  style = document.createElement('style');
-                  style.id = 'pagepalette-' + ruleId;
-                  (document.head || document.documentElement).appendChild(style);
-                }
-                style.textContent = cssText;
-              },
-              args: [rule.id, rule.css]
-            }).catch(() => {});
-          }
-        });
-        updateBadge(tabId, count);
+        updateBadge(tabId, applicableRules.length, '#333333');
       } else {
-        updateBadge(tabId, 0);
+        updateBadge(tabId, applicableRules.length, '#888888');
       }
     } else {
       // No rules matched
@@ -111,10 +146,10 @@ function evaluateRulesForTab(tabId, url) {
 }
 
 // Function to update the extension icon badge
-function updateBadge(tabId, count) {
+function updateBadge(tabId, count, color = '#333333') {
   if (count > 0) {
     chrome.action.setBadgeText({ text: count.toString(), tabId: tabId });
-    chrome.action.setBadgeBackgroundColor({ color: '#333333', tabId: tabId });
+    chrome.action.setBadgeBackgroundColor({ color: color, tabId: tabId });
     if (chrome.action.setBadgeTextColor) {
       chrome.action.setBadgeTextColor({ color: '#eeeeee', tabId: tabId });
     }
@@ -126,30 +161,37 @@ function updateBadge(tabId, count) {
 
 // Open options page or toggle styles on extension icon click
 chrome.action.onClicked.addListener((tab) => {
-  const state = tabState[tab.id];
-  
-  // If there are applicable rules for this page, toggle them globally
-  if (state && state.applicableRules && state.applicableRules.length > 0) {
-    chrome.storage.local.get({ rules: [] }, (data) => {
-      let rules = data.rules;
-      const newEnabledState = !state.hasEnabledRules;
+  if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
+    chrome.runtime.openOptionsPage();
+    return;
+  }
+
+  chrome.storage.local.get({ rules: [] }, (data) => {
+    const rules = data.rules;
+    ensureUniqueIds(rules);
+    const applicableRules = getMatchingRules(rules, tab.url);
+    
+    // If there are applicable rules for this page, toggle them
+    if (applicableRules.length > 0) {
+      const hasEnabledRules = applicableRules.some(r => r.enabled);
+      const newEnabledState = !hasEnabledRules;
       
-      // Update rules in memory and in the fetched storage copy
-      state.applicableRules.forEach(appRule => {
-        const idx = rules.findIndex(r => r.id === appRule.id);
-        if (idx !== -1) {
-          rules[idx].enabled = newEnabledState;
-          appRule.enabled = newEnabledState; // Update local state copy
-        }
+      // Update rules directly via reference
+      applicableRules.forEach(appRule => {
+        appRule.enabled = newEnabledState;
       });
       
-      // Save globally so it acts like clicking the toggle in settings
+      // Save the updated main rules array (which now contains the changed enabled states)
       chrome.storage.local.set({ rules: rules }, () => {
-        state.hasEnabledRules = newEnabledState;
+        // Update local state and badge immediately
+        tabState[tab.id] = {
+          applicableRules: applicableRules.map(r => ({ ...r, enabled: newEnabledState })),
+          hasEnabledRules: newEnabledState
+        };
         
-        if (newEnabledState) {
-          // Re-inject styles
-          state.applicableRules.forEach(rule => {
+        applicableRules.forEach(rule => {
+          if (newEnabledState) {
+            // Inject styles
             chrome.scripting.executeScript({
               target: { tabId: tab.id, allFrames: true },
               func: (ruleId, cssText) => {
@@ -163,11 +205,8 @@ chrome.action.onClicked.addListener((tab) => {
               },
               args: [rule.id, rule.css]
             }).catch(() => {});
-          });
-          updateBadge(tab.id, state.applicableRules.length);
-        } else {
-          // Remove styles
-          state.applicableRules.forEach(rule => {
+          } else {
+            // Remove styles
             chrome.scripting.executeScript({
               target: { tabId: tab.id, allFrames: true },
               func: (ruleId) => {
@@ -176,15 +215,16 @@ chrome.action.onClicked.addListener((tab) => {
               },
               args: [rule.id]
             }).catch(() => {});
-          });
-          updateBadge(tab.id, 0);
-        }
+          }
+        });
+        
+        updateBadge(tab.id, applicableRules.length, newEnabledState ? '#333333' : '#888888');
       });
-    });
-  } else {
-    // No matching rules for this page -> Open the Options Page
-    chrome.runtime.openOptionsPage();
-  }
+    } else {
+      // No matching rules for this page -> Open the Options Page
+      chrome.runtime.openOptionsPage();
+    }
+  });
 });
 
 // Cleanup memory when a tab is closed
