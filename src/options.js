@@ -20,6 +20,34 @@ let allRules = [];
 let editingRuleId = null;
 let currentMessages = {};
 
+// Drag and Drop Logic
+rulesList.addEventListener('dragover', e => {
+  e.preventDefault();
+  const draggingElement = document.querySelector('.dragging');
+  if (!draggingElement) return;
+  
+  const afterElement = getDragAfterElement(rulesList, e.clientY);
+  if (afterElement == null) {
+    rulesList.appendChild(draggingElement);
+  } else {
+    rulesList.insertBefore(draggingElement, afterElement);
+  }
+});
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.rule-card:not(.dragging)')];
+
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
 function getMessage(key) {
   return currentMessages[key] ? currentMessages[key].message : key;
 }
@@ -115,6 +143,20 @@ function renderRules() {
   allRules.forEach(rule => {
     const card = document.createElement('div');
     card.className = 'rule-card';
+    card.dataset.id = rule.id;
+    card.draggable = true;
+
+    card.addEventListener('dragstart', () => {
+      card.classList.add('dragging');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      // Update state based on new DOM order
+      const reorderedIds = [...rulesList.querySelectorAll('.rule-card')].map(c => c.dataset.id);
+      allRules = reorderedIds.map(id => allRules.find(r => r.id === id)).filter(Boolean);
+      saveToStorage();
+    });
     
     // Preview a snippet of CSS
     const cssPreview = rule.css.replace(/[\n\r]/g, ' ').substring(0, 80) + '...';

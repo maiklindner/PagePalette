@@ -116,6 +116,15 @@ p {
   justify-content: space-between;
   align-items: center;
   background-color: var(--secondary-bg);
+  cursor: grab;
+  user-select: none;
+}
+
+.rule-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  border-style: dashed;
+  background-color: var(--card-bg-color);
 }
 
 .rule-info {
