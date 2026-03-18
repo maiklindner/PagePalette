@@ -139,6 +139,7 @@ p#optionsDescription {
 
 .rule-info {
   flex-grow: 1;
+  min-width: 0; /* Important: Allows the flex item to shrink below its content's intrinsic width */
 }
 
 .rule-regex {
@@ -162,6 +163,7 @@ p#optionsDescription {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-shrink: 0; /* Prevents buttons from being squeezed out */
 }
 
 /* Form Styles */
@@ -213,6 +215,7 @@ button {
   font-family: inherit;
   border: none;
   transition: background-color 0.2s;
+  white-space: nowrap; /* Prevents text wrapping inside buttons */
 }
 
 button:disabled {
@@ -365,5 +368,35 @@ input:checked + .slider:before {
   to {
     transform: translate(-50%, 0);
     opacity: 1;
+  }
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 600px) {
+  .container {
+    padding: 1.5em;
+    margin: 1em;
+  }
+
+  .rules-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .rule-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .rule-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }
