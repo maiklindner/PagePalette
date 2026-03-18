@@ -13,7 +13,11 @@
       "phonation": {
         "PagePalette": "ˈpeɪdʒˌpælət"
       },
-      "features": ["Custom CSS", "Regex Rules", "100% Private"]
+      "features": ["Custom CSS", "Regex Rules", "100% Private"],
+      "screenshotSamples": [
+        { "name": "Global Styles", "urlRegex": ".*" },
+        { "name": "Example.com Redesign", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "de": {
       "voice": "de-DE-Chirp3-HD-Enceladus",
@@ -25,7 +29,11 @@
         "Import und Export: Blitzschnell, einfach und 100% privat.",
         "PagePalette"
       ],
-      "features": ["Custom CSS", "Regex Regeln", "Privat & Sicher"]
+      "features": ["Custom CSS", "Regex Regeln", "Privat & Sicher"],
+      "screenshotSamples": [
+        { "name": "Globale Stile", "urlRegex": ".*" },
+        { "name": "Example.com Redesign", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "ja": {
       "voice": "ja-JP-Chirp3-HD-Enceladus",
@@ -37,7 +45,11 @@
         "高速エクスポート、完全に秘密。",
         "PagePalette"
       ],
-      "features": ["カスタムCSS", "正規表現ルール", "プライバシー重視"]
+      "features": ["カスタムCSS", "正規表現ルール", "プライバシー重視"],
+      "screenshotSamples": [
+        { "name": "グローバルスタイル", "urlRegex": ".*" },
+        { "name": "Example.com リデザイン", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "es": {
       "voice": "es-ES-Chirp3-HD-Enceladus",
@@ -49,7 +61,11 @@
         "Exporta e importa reglas al instante. Rápido y 100% privado.",
         "PagePalette"
       ],
-      "features": ["CSS Personalizado", "Reglas Regex", "100% Privado"]
+      "features": ["CSS Personalizado", "Reglas Regex", "100% Privado"],
+      "screenshotSamples": [
+        { "name": "Estilos Globales", "urlRegex": ".*" },
+        { "name": "Rediseño de Example.com", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "fr": {
       "voice": "fr-FR-Chirp3-HD-Enceladus",
@@ -61,7 +77,11 @@
         "Exportez et importez vos règles en un clic. 100% privé.",
         "PagePalette"
       ],
-      "features": ["CSS Personnalisé", "Règles Regex", "Privé & Rapide"]
+      "features": ["CSS Personnalisé", "Règles Regex", "Privé & Rapide"],
+      "screenshotSamples": [
+        { "name": "Styles Globaux", "urlRegex": ".*" },
+        { "name": "Refonte Example.com", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "pt_BR": {
       "voice": "pt-BR-Chirp3-HD-Enceladus",
@@ -73,7 +93,11 @@
         "Exporte e importe regras rapidamente. Rápido e 100% privado.",
         "PagePalette"
       ],
-      "features": ["CSS Customizado", "Regras Regex", "Privacidade"]
+      "features": ["CSS Customizado", "Regras Regex", "Privacidade"],
+      "screenshotSamples": [
+        { "name": "Estilos Globais", "urlRegex": ".*" },
+        { "name": "Redesign de Example.com", "urlRegex": ".*example\\.com.*" }
+      ]
     },
     "zh_CN": {
       "voice": "cmn-CN-Chirp3-HD-Enceladus",
@@ -85,7 +109,11 @@
         "快速导出，100% 私密。",
         "PagePalette"
       ],
-      "features": ["自定义 CSS", "正则规则", "100% 私密"]
+      "features": ["自定义 CSS", "正则规则", "100% 私密"],
+      "screenshotSamples": [
+        { "name": "全局样式", "urlRegex": ".*" },
+        { "name": "Example.com 重设计", "urlRegex": ".*example\\.com.*" }
+      ]
     }
   }
 }
