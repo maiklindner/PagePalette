@@ -3,19 +3,19 @@
     "message": "PagePalette"
   },
   "extDescription": {
-    "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
+    "message": "URLルールに基づいて特定のCSSスタイルを自動的に注入し、お気に入りのウェブサイトをカスタマイズします。"
   },
   "optionsTitle": {
     "message": "PagePalette"
   },
-  "optionsDesc": {
-    "message": "ここでカスタムCSSルールを管理します。"
+  "optionsDescription": {
+    "message": "ここでカスタムCSSルールと注入設定を管理します。"
   },
   "optionsYourRules": {
     "message": "あなたのルール"
   },
   "optionsAddNew": {
-    "message": "+ 新しいルールを追加"
+    "message": "+ ルールを追加"
   },
   "optionsNoRules": {
     "message": "まだルールが定義されていません。"
@@ -24,7 +24,7 @@
     "message": "ルールの編集"
   },
   "optionsAddNewRule": {
-    "message": "新しいルールを追加"
+    "message": "ルールを追加"
   },
   "optionsBtnEdit": {
     "message": "編集"

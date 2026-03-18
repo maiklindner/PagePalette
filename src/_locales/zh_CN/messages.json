@@ -3,19 +3,19 @@
     "message": "PagePalette"
   },
   "extDescription": {
-    "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
+    "message": "根据 URL 规则自动注入特定的 CSS 样式，自定义您喜欢的网站。"
   },
   "optionsTitle": {
     "message": "PagePalette"
   },
-  "optionsDesc": {
-    "message": "在此管理你的自定义 CSS 规则。"
+  "optionsDescription": {
+    "message": "在此管理您的自定义 CSS 规则和注入设置。"
   },
   "optionsYourRules": {
     "message": "你的规则"
   },
   "optionsAddNew": {
-    "message": "+ 添加新规则"
+    "message": "+ 添加规则"
   },
   "optionsNoRules": {
     "message": "尚未定义任何规则。"
@@ -24,7 +24,7 @@
     "message": "编辑规则"
   },
   "optionsAddNewRule": {
-    "message": "添加新规则"
+    "message": "添加规则"
   },
   "optionsBtnEdit": {
     "message": "编辑"

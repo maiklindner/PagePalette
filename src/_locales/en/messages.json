@@ -8,14 +8,14 @@
   "optionsTitle": {
     "message": "PagePalette"
   },
-  "optionsDesc": {
-    "message": "Manage your custom CSS rules here."
+  "optionsDescription": {
+    "message": "Manage your custom CSS rules and injection settings here."
   },
   "optionsYourRules": {
     "message": "Your Rules"
   },
   "optionsAddNew": {
-    "message": "+ Add New Rule"
+    "message": "+ Add Rule"
   },
   "optionsNoRules": {
     "message": "No rules defined yet."
@@ -24,7 +24,7 @@
     "message": "Edit Rule"
   },
   "optionsAddNewRule": {
-    "message": "Add New Rule"
+    "message": "Add Rule"
   },
   "optionsBtnEdit": {
     "message": "Edit"

@@ -3,19 +3,19 @@
     "message": "PagePalette"
   },
   "extDescription": {
-    "message": "Customize your favorite websites by automatically injecting specific CSS styles based on URL rules."
+    "message": "Personnalisez vos sites web préférés en injectant automatiquement des styles CSS spécifiques basés sur des règles d'URL."
   },
   "optionsTitle": {
     "message": "PagePalette"
   },
-  "optionsDesc": {
-    "message": "Gérez vos règles CSS personnalisées ici."
+  "optionsDescription": {
+    "message": "Gérez vos règles CSS personnalisées et vos paramètres d'injection ici."
   },
   "optionsYourRules": {
     "message": "Vos Règles"
   },
   "optionsAddNew": {
-    "message": "+ Ajouter une nouvelle règle"
+    "message": "+ Ajouter une règle"
   },
   "optionsNoRules": {
     "message": "Aucune règle définie pour le moment."
@@ -24,7 +24,7 @@
     "message": "Modifier la Règle"
   },
   "optionsAddNewRule": {
-    "message": "Ajouter une Nouvelle Règle"
+    "message": "Ajouter une Règle"
   },
   "optionsBtnEdit": {
     "message": "Modifier"

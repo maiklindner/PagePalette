@@ -100,7 +100,7 @@ function initLocalization(callback) {
 function localizeHtmlPage() {
   document.title = getMessage('optionsTitle');
   document.getElementById('titleH1').textContent = getMessage('extName');
-  document.getElementById('optionsDesc').textContent = getMessage('optionsDesc');
+    document.getElementById('optionsDescription').textContent = chrome.i18n.getMessage('optionsDescription');
   document.querySelector('.rules-header h2').textContent = getMessage('optionsYourRules');
   document.getElementById('addNewBtn').textContent = getMessage('optionsAddNew');
   document.getElementById('exportBtn').textContent = getMessage('optionsBtnExport');

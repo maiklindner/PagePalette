@@ -89,7 +89,7 @@ h2 {
   font-weight: 600;
 }
 
-p#optionsDesc {
+p#optionsDescription {
   color: var(--label-color);
   opacity: 0.9;
   margin-top: 0;
