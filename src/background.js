@@ -126,12 +126,23 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
         hasEnabledRules: hasEnabledRules
       };
 
-      // Only process injection if requested (e.g., on navigate)
+      // Only process injection if requested (e.g., on navigate or storage change)
       if (shouldInject) {
         applicableRules.forEach(rule => {
           if (rule.enabled) {
-            // Apply style tag with ID for easy management and removal
-            // Triggered at onCommitted, this is significantly faster than onUpdated(complete)
+            // High-speed injection for FOUC prevention
+            // We always try to remove it first to avoid accumulation (important for removeCSS to work)
+            chrome.scripting.removeCSS({
+              target: { tabId: tabId, allFrames: true },
+              css: rule.css
+            }).catch(() => { }).finally(() => {
+              chrome.scripting.insertCSS({
+                target: { tabId: tabId, allFrames: true },
+                css: rule.css
+              }).catch(() => { });
+            });
+
+            // Parallel ID-based style tag for easy runtime updates and removal
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
               func: (ruleId, cssText) => {
@@ -141,7 +152,6 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
                   style.id = 'pagepalette-' + ruleId;
                   (document.head || document.documentElement).appendChild(style);
                 }
-                // Update content only if changed to avoid unnecessary re-paints
                 if (style.textContent !== cssText) {
                   style.textContent = cssText;
                 }
@@ -149,7 +159,12 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
               args: [rule.id, rule.css]
             }).catch(() => { });
           } else {
-            // Ensure style tag is removed if the rule is disabled
+            // Rule disabled: Cleanup both methods
+            chrome.scripting.removeCSS({
+              target: { tabId: tabId, allFrames: true },
+              css: rule.css
+            }).catch(() => { });
+
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
               func: (ruleId) => {
