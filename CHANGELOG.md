@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2026-03-18
+
+### Changed
+- **Screenshot Refinement**: Centralized and localized demo data in `locales.json` for high-quality screenshots.
+- **Fixed**: Corrected property mapping for RegEx patterns in screenshots.
+
 ## [1.4.1] - 2026-03-17
 
 ### Fixed
