@@ -21,6 +21,7 @@ let editingRuleId = null;
 let currentMessages = {};
 let lastDeletedRule = null;
 let toastTimeout = null;
+let liveUpdateTimeout = null;
 
 // Utility: Ensure all rules have IDs and resolve duplicates
 function ensureUniqueIds(rules) {
@@ -142,6 +143,10 @@ function init() {
   importFile.addEventListener('change', importRules);
   
   document.getElementById('toastUndoBtn').addEventListener('click', undoDelete);
+  
+  // Live Preview listener
+  ruleCssInput.addEventListener('input', triggerLiveUpdate);
+  ruleRegexInput.addEventListener('input', triggerLiveUpdate);
 }
 
 // Load rules from storage
@@ -222,7 +227,7 @@ function renderRules() {
 
 // Open editor to create a new rule
 function openEditorForNew() {
-  editingRuleId = null;
+  editingRuleId = "rule_new_" + Date.now(); // Temporary ID for live preview
   editorTitle.textContent = getMessage('optionsAddNewRule');
   ruleNameInput.value = '';
   ruleRegexInput.value = '';
@@ -249,8 +254,10 @@ function openEditorForEdit(id) {
 
 // Close the editor
 function closeEditor() {
+  editingRuleId = null;
   rulesSection.classList.remove('hidden');
   editorSection.classList.add('hidden');
+  loadRules(); // Reload to revert any unsaved live changes
 }
 
 // Save the rule
@@ -272,7 +279,8 @@ function saveRule() {
     return;
   }
 
-  if (editingRuleId) {
+  // If we were editing an existing rule (not a temporary preview ID)
+  if (editingRuleId && !editingRuleId.startsWith('rule_new_')) {
     // Edit existing
     const ruleIndex = allRules.findIndex(r => r.id === editingRuleId);
     if (ruleIndex !== -1) {
@@ -281,7 +289,7 @@ function saveRule() {
       allRules[ruleIndex].css = cssValue;
     }
   } else {
-    // Create new
+    // Create new (replaces any temporary preview ID with a permanent one)
     allRules.push({
       id: "rule_" + Date.now().toString(),
       name: nameValue,
@@ -291,6 +299,7 @@ function saveRule() {
     });
   }
 
+  editingRuleId = null;
   saveToStorage(() => {
     closeEditor();
     renderRules();
@@ -373,6 +382,47 @@ function toggleRule(id, isEnabled) {
     rule.enabled = isEnabled;
     saveToStorage();
   }
+}
+
+// Trigger a debounced update for live preview
+function triggerLiveUpdate() {
+  if (liveUpdateTimeout) clearTimeout(liveUpdateTimeout);
+  
+  liveUpdateTimeout = setTimeout(() => {
+    const regexValue = ruleRegexInput.value.trim();
+    const cssValue = ruleCssInput.value.trim();
+    
+    if (!regexValue || !cssValue) return;
+    
+    // Check if regex is valid before attempting update
+    try {
+      new RegExp(regexValue);
+    } catch (e) {
+      return; 
+    }
+
+    // Update the rule in memory
+    let rule = allRules.find(r => r.id === editingRuleId);
+    if (!rule) {
+      // It's a new rule being previewed - always allow preview
+      rule = {
+        id: editingRuleId,
+        name: ruleNameInput.value.trim(),
+        urlRegex: regexValue,
+        css: cssValue,
+        enabled: true
+      };
+      const previewRules = [...allRules, rule];
+      chrome.storage.local.set({ rules: previewRules });
+    } else {
+      // For existing rules, only trigger live preview if it's currently enabled
+      if (rule.enabled) {
+        rule.urlRegex = regexValue;
+        rule.css = cssValue;
+        saveToStorage();
+      }
+    }
+  }, 300); // 300ms debounce
 }
 
 // Dump to chrome.storage
@@ -460,5 +510,41 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.set({ language: e.target.value }, () => {
       initLocalization();
     });
+  });
+
+  // Keep rules in sync with storage (e.g., if toggled via toolbar)
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.rules) {
+      const newRules = changes.rules.newValue;
+      
+      if (!editingRuleId) {
+        allRules = newRules;
+        renderRules();
+      } else {
+        // If we're editing, we want to stay in sync with the enabled status (from toolbar)
+        // but avoid overwriting our current editor fields or starting an infinite loop.
+        let statusChanged = false;
+        newRules.forEach(newRule => {
+          const localRule = allRules.find(r => r.id === newRule.id);
+          if (localRule) {
+            if (localRule.enabled !== newRule.enabled) {
+              localRule.enabled = newRule.enabled;
+              statusChanged = true;
+            }
+          } else {
+            // A rule was added or deleted elsewhere
+            allRules = newRules;
+            statusChanged = true;
+          }
+        });
+
+        // If the enabled status of our current rule changed via toolbar, 
+        // we might now need to trigger a live update with our current CSS.
+        const currentRule = allRules.find(r => r.id === editingRuleId);
+        if (statusChanged && currentRule && currentRule.enabled) {
+          triggerLiveUpdate();
+        }
+      }
+    }
   });
 });

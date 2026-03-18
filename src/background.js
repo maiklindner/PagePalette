@@ -4,6 +4,13 @@
 // Format: { tabId: { applicableRules: [...], hasEnabledRules: boolean } }
 const tabState = {};
 
+// Injection Modes for evaluateRulesForTab
+const INJECT_MODE = {
+  INITIAL: 'initial',       // At navigation start (FOUC protection)
+  LIVE_UPDATE: 'live',      // At storage change (Active editing)
+  BADGE_ONLY: 'badge_only'  // At tab switch/complete (No re-injection)
+};
+
 /**
  * Ensures all rules have a unique ID. 
  * Migrates legacy rules without IDs and resolves duplicate IDs.
@@ -47,13 +54,16 @@ function migrateSyncToLocal() {
   });
 }
 
-// Listen for changes in storage to update active tabs immediately
+// Listen for changes in storage to update all matching tabs immediately
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'local' && changes.rules) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0] && tabs[0].url) {
-        evaluateRulesForTab(tabs[0].id, tabs[0].url, true);
-      }
+    // For live preview, we want to update all tabs that could match the new rules
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
+          evaluateRulesForTab(tab.id, tab.url, INJECT_MODE.LIVE_UPDATE);
+        }
+      });
     });
   }
 });
@@ -61,14 +71,14 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 // We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
   if (details.frameId === 0) { // Main frame navigation
-    evaluateRulesForTab(details.tabId, details.url, true);
+    evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL);
   }
 });
 
 // For SPAs and history state changes, we also want to catch early injection
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   if (details.frameId === 0) {
-    evaluateRulesForTab(details.tabId, details.url, true);
+    evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL);
   }
 });
 
@@ -76,7 +86,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
-      evaluateRulesForTab(tabId, tab.url, false); // Just update badge/state
+      evaluateRulesForTab(tabId, tab.url, INJECT_MODE.BADGE_ONLY);
     }
   }
 });
@@ -85,7 +95,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tab) => {
     if (tab && tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
-      evaluateRulesForTab(tabId, tab.url, false); // Just update badge/state
+      evaluateRulesForTab(tabId, tab.url, INJECT_MODE.BADGE_ONLY);
     }
   });
 });
@@ -107,7 +117,7 @@ function getMatchingRules(rules, url) {
   return applicableRules;
 }
 
-function evaluateRulesForTab(tabId, url, shouldInject = true) {
+function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
   chrome.storage.local.get({ rules: [] }, (data) => {
     const rules = data.rules;
     const rulesChanged = ensureUniqueIds(rules);
@@ -119,30 +129,31 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
 
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
-
+      
       // Store state for this tab
       tabState[tabId] = {
         applicableRules: applicableRules,
         hasEnabledRules: hasEnabledRules
       };
-
-      // Only process injection if requested (e.g., on navigate or storage change)
-      if (shouldInject) {
+      
+      // Process injection based on mode
+      if (mode === INJECT_MODE.INITIAL || mode === INJECT_MODE.LIVE_UPDATE) {
         applicableRules.forEach(rule => {
           if (rule.enabled) {
-            // High-speed injection for FOUC prevention
-            // We always try to remove it first to avoid accumulation (important for removeCSS to work)
-            chrome.scripting.removeCSS({
-              target: { tabId: tabId, allFrames: true },
-              css: rule.css
-            }).catch(() => { }).finally(() => {
-              chrome.scripting.insertCSS({
+            // INITIAL mode uses insertCSS for maximum speed (FOUC prevention)
+            if (mode === INJECT_MODE.INITIAL) {
+              chrome.scripting.removeCSS({
                 target: { tabId: tabId, allFrames: true },
                 css: rule.css
-              }).catch(() => { });
-            });
+              }).catch(() => { }).finally(() => {
+                chrome.scripting.insertCSS({
+                  target: { tabId: tabId, allFrames: true },
+                  css: rule.css
+                }).catch(() => { });
+              });
+            }
 
-            // Parallel ID-based style tag for easy runtime updates and removal
+            // Always update/inject the ID-based style tag (best for LIVE_UPDATE and runtime sync)
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
               func: (ruleId, cssText) => {
