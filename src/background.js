@@ -11,7 +11,7 @@ const tabState = {};
 function ensureUniqueIds(rules) {
   let changed = false;
   const seenIds = new Set();
-  
+
   rules.forEach(rule => {
     if (!rule.id || seenIds.has(rule.id)) {
       rule.id = "rule_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
@@ -39,8 +39,6 @@ function migrateSyncToLocal() {
         if (!localData.rules || localData.rules.length === 0) {
           console.log('Migrating rules from sync to local storage...');
           chrome.storage.local.set({ rules: syncData.rules }, () => {
-            // Optional: We could clear sync storage here, but keeping it as a backup is safer for now
-            // chrome.storage.sync.remove('rules');
             console.log('Migration successful.');
           });
         }
@@ -48,6 +46,17 @@ function migrateSyncToLocal() {
     }
   });
 }
+
+// Listen for changes in storage to update active tabs immediately
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes.rules) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].url) {
+        evaluateRulesForTab(tabs[0].id, tabs[0].url, true);
+      }
+    });
+  }
+});
 
 // We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
@@ -110,24 +119,19 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
 
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
-      
+
       // Store state for this tab
       tabState[tabId] = {
         applicableRules: applicableRules,
         hasEnabledRules: hasEnabledRules
       };
-      
+
       // Only process injection if requested (e.g., on navigate)
       if (shouldInject) {
         applicableRules.forEach(rule => {
           if (rule.enabled) {
-            // Use insertCSS for faster, earlier application without FOUC
-            chrome.scripting.insertCSS({
-              target: { tabId: tabId, allFrames: true },
-              css: rule.css
-            }).catch(() => {});
-            
-            // We also still want the ID-based style tag for easy removal/updates in popup
+            // Apply style tag with ID for easy management and removal
+            // Triggered at onCommitted, this is significantly faster than onUpdated(complete)
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
               func: (ruleId, cssText) => {
@@ -137,12 +141,15 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
                   style.id = 'pagepalette-' + ruleId;
                   (document.head || document.documentElement).appendChild(style);
                 }
-                style.textContent = cssText;
+                // Update content only if changed to avoid unnecessary re-paints
+                if (style.textContent !== cssText) {
+                  style.textContent = cssText;
+                }
               },
               args: [rule.id, rule.css]
-            }).catch(() => {});
+            }).catch(() => { });
           } else {
-            // Remove custom style tag
+            // Ensure style tag is removed if the rule is disabled
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
               func: (ruleId) => {
@@ -150,13 +157,7 @@ function evaluateRulesForTab(tabId, url, shouldInject = true) {
                 if (style) style.remove();
               },
               args: [rule.id]
-            }).catch(() => {});
-            
-            // And remove the CSS applied via insertCSS (requires exact string match or page reload)
-            chrome.scripting.removeCSS({
-              target: { tabId: tabId, allFrames: true },
-              css: rule.css
-            }).catch(() => {});
+            }).catch(() => { });
           }
         });
       }
@@ -199,68 +200,21 @@ chrome.action.onClicked.addListener((tab) => {
     const rules = data.rules;
     ensureUniqueIds(rules);
     const applicableRules = getMatchingRules(rules, tab.url);
-    
+
     // If there are applicable rules for this page, toggle them
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
       const newEnabledState = !hasEnabledRules;
-      
+
       // Update rules directly via reference
       applicableRules.forEach(appRule => {
         appRule.enabled = newEnabledState;
       });
-      
-      // Save the updated main rules array (which now contains the changed enabled states)
-      chrome.storage.local.set({ rules: rules }, () => {
-        // Update local state and badge immediately
-        tabState[tab.id] = {
-          applicableRules: applicableRules.map(r => ({ ...r, enabled: newEnabledState })),
-          hasEnabledRules: newEnabledState
-        };
-        
-        applicableRules.forEach(rule => {
-          if (newEnabledState) {
-            // Inject styles using insertCSS for immediacy
-            chrome.scripting.insertCSS({
-              target: { tabId: tab.id, allFrames: true },
-              css: rule.css
-            }).catch(() => {});
 
-            // Also inject style tag for management
-            chrome.scripting.executeScript({
-              target: { tabId: tab.id, allFrames: true },
-              func: (ruleId, cssText) => {
-                let style = document.getElementById('pagepalette-' + ruleId);
-                if (!style) {
-                  style = document.createElement('style');
-                  style.id = 'pagepalette-' + ruleId;
-                  (document.head || document.documentElement).appendChild(style);
-                }
-                style.textContent = cssText;
-              },
-              args: [rule.id, rule.css]
-            }).catch(() => {});
-          } else {
-            // Remove styles using removeCSS
-            chrome.scripting.removeCSS({
-              target: { tabId: tab.id, allFrames: true },
-              css: rule.css
-            }).catch(() => {});
-
-            // Also remove the style tag
-            chrome.scripting.executeScript({
-              target: { tabId: tab.id, allFrames: true },
-              func: (ruleId) => {
-                const style = document.getElementById('pagepalette-' + ruleId);
-                if (style) style.remove();
-              },
-              args: [rule.id]
-            }).catch(() => {});
-          }
-        });
-        
-        updateBadge(tab.id, applicableRules.length, newEnabledState ? '#333333' : '#888888');
-      });
+      // Save the updated main rules array
+      chrome.storage.local.set({ rules: rules });
+      // The chrome.storage.onChanged listener will handle the actual injection 
+      // and badge update for the active tab immediately.
     } else {
       // No matching rules for this page -> Open the Options Page
       chrome.runtime.openOptionsPage();
