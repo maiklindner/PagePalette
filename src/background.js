@@ -51,26 +51,32 @@ function migrateSyncToLocal() {
 
 // We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
-  if (details.frameId === 0) { // Only trigger for main frame, which will handle all frames via executeScript if needed
-    evaluateRulesForTab(details.tabId, details.url);
+  if (details.frameId === 0) { // Main frame navigation
+    evaluateRulesForTab(details.tabId, details.url, true);
   }
 });
 
-// We still check on complete to ensure everything is in sync
+// For SPAs and history state changes, we also want to catch early injection
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  if (details.frameId === 0) {
+    evaluateRulesForTab(details.tabId, details.url, true);
+  }
+});
+
+// We still check on complete to ensure everything is in sync, but don't re-inject
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
-      evaluateRulesForTab(tabId, tab.url);
+      evaluateRulesForTab(tabId, tab.url, false); // Just update badge/state
     }
   }
 });
 
-// We also evaluate when switching tabs, so the badge updates correctly
+// We evaluate for badge update when switching tabs
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tab) => {
     if (tab && tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
-      // Small delay to ensure tab url is fresh
-      evaluateRulesForTab(tabId, tab.url);
+      evaluateRulesForTab(tabId, tab.url, false); // Just update badge/state
     }
   });
 });
@@ -92,7 +98,7 @@ function getMatchingRules(rules, url) {
   return applicableRules;
 }
 
-function evaluateRulesForTab(tabId, url) {
+function evaluateRulesForTab(tabId, url, shouldInject = true) {
   chrome.storage.local.get({ rules: [] }, (data) => {
     const rules = data.rules;
     const rulesChanged = ensureUniqueIds(rules);
@@ -111,47 +117,49 @@ function evaluateRulesForTab(tabId, url) {
         hasEnabledRules: hasEnabledRules
       };
       
-      // Always process all applicable rules: inject if enabled, remove if disabled
-      applicableRules.forEach(rule => {
-        if (rule.enabled) {
-          // Use insertCSS for faster, earlier application without FOUC
-          chrome.scripting.insertCSS({
-            target: { tabId: tabId, allFrames: true },
-            css: rule.css
-          }).catch(err => console.error('insertCSS failed:', err));
-          
-          // We also still want the ID-based style tag for easy removal/updates in popup
-          chrome.scripting.executeScript({
-            target: { tabId: tabId, allFrames: true },
-            func: (ruleId, cssText) => {
-              let style = document.getElementById('pagepalette-' + ruleId);
-              if (!style) {
-                style = document.createElement('style');
-                style.id = 'pagepalette-' + ruleId;
-                (document.head || document.documentElement).appendChild(style);
-              }
-              style.textContent = cssText;
-            },
-            args: [rule.id, rule.css]
-          }).catch(() => {});
-        } else {
-          // Remove custom style tag
-          chrome.scripting.executeScript({
-            target: { tabId: tabId, allFrames: true },
-            func: (ruleId) => {
-              const style = document.getElementById('pagepalette-' + ruleId);
-              if (style) style.remove();
-            },
-            args: [rule.id]
-          }).catch(() => {});
-          
-          // And remove the CSS applied via insertCSS (requires exact string match or page reload)
-          chrome.scripting.removeCSS({
-            target: { tabId: tabId, allFrames: true },
-            css: rule.css
-          }).catch(() => {});
-        }
-      });
+      // Only process injection if requested (e.g., on navigate)
+      if (shouldInject) {
+        applicableRules.forEach(rule => {
+          if (rule.enabled) {
+            // Use insertCSS for faster, earlier application without FOUC
+            chrome.scripting.insertCSS({
+              target: { tabId: tabId, allFrames: true },
+              css: rule.css
+            }).catch(() => {});
+            
+            // We also still want the ID-based style tag for easy removal/updates in popup
+            chrome.scripting.executeScript({
+              target: { tabId: tabId, allFrames: true },
+              func: (ruleId, cssText) => {
+                let style = document.getElementById('pagepalette-' + ruleId);
+                if (!style) {
+                  style = document.createElement('style');
+                  style.id = 'pagepalette-' + ruleId;
+                  (document.head || document.documentElement).appendChild(style);
+                }
+                style.textContent = cssText;
+              },
+              args: [rule.id, rule.css]
+            }).catch(() => {});
+          } else {
+            // Remove custom style tag
+            chrome.scripting.executeScript({
+              target: { tabId: tabId, allFrames: true },
+              func: (ruleId) => {
+                const style = document.getElementById('pagepalette-' + ruleId);
+                if (style) style.remove();
+              },
+              args: [rule.id]
+            }).catch(() => {});
+            
+            // And remove the CSS applied via insertCSS (requires exact string match or page reload)
+            chrome.scripting.removeCSS({
+              target: { tabId: tabId, allFrames: true },
+              css: rule.css
+            }).catch(() => {});
+          }
+        });
+      }
 
       if (hasEnabledRules) {
         updateBadge(tabId, applicableRules.length, '#333333');
@@ -212,7 +220,13 @@ chrome.action.onClicked.addListener((tab) => {
         
         applicableRules.forEach(rule => {
           if (newEnabledState) {
-            // Inject styles
+            // Inject styles using insertCSS for immediacy
+            chrome.scripting.insertCSS({
+              target: { tabId: tab.id, allFrames: true },
+              css: rule.css
+            }).catch(() => {});
+
+            // Also inject style tag for management
             chrome.scripting.executeScript({
               target: { tabId: tab.id, allFrames: true },
               func: (ruleId, cssText) => {
@@ -227,7 +241,13 @@ chrome.action.onClicked.addListener((tab) => {
               args: [rule.id, rule.css]
             }).catch(() => {});
           } else {
-            // Remove styles
+            // Remove styles using removeCSS
+            chrome.scripting.removeCSS({
+              target: { tabId: tab.id, allFrames: true },
+              css: rule.css
+            }).catch(() => {});
+
+            // Also remove the style tag
             chrome.scripting.executeScript({
               target: { tabId: tab.id, allFrames: true },
               func: (ruleId) => {
