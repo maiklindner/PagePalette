@@ -49,9 +49,16 @@ function migrateSyncToLocal() {
   });
 }
 
-// We evaluate rules when a tab is updated (e.g., finishes loading)
+// We evaluate rules as early as possible when a navigation is committed
+chrome.webNavigation.onCommitted.addListener((details) => {
+  if (details.frameId === 0) { // Only trigger for main frame, which will handle all frames via executeScript if needed
+    evaluateRulesForTab(details.tabId, details.url);
+  }
+});
+
+// We still check on complete to ensure everything is in sync
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading' || changeInfo.status === 'complete') {
+  if (changeInfo.status === 'complete') {
     if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
       evaluateRulesForTab(tabId, tab.url);
     }
@@ -107,6 +114,13 @@ function evaluateRulesForTab(tabId, url) {
       // Always process all applicable rules: inject if enabled, remove if disabled
       applicableRules.forEach(rule => {
         if (rule.enabled) {
+          // Use insertCSS for faster, earlier application without FOUC
+          chrome.scripting.insertCSS({
+            target: { tabId: tabId, allFrames: true },
+            css: rule.css
+          }).catch(err => console.error('insertCSS failed:', err));
+          
+          // We also still want the ID-based style tag for easy removal/updates in popup
           chrome.scripting.executeScript({
             target: { tabId: tabId, allFrames: true },
             func: (ruleId, cssText) => {
@@ -121,6 +135,7 @@ function evaluateRulesForTab(tabId, url) {
             args: [rule.id, rule.css]
           }).catch(() => {});
         } else {
+          // Remove custom style tag
           chrome.scripting.executeScript({
             target: { tabId: tabId, allFrames: true },
             func: (ruleId) => {
@@ -128,6 +143,12 @@ function evaluateRulesForTab(tabId, url) {
               if (style) style.remove();
             },
             args: [rule.id]
+          }).catch(() => {});
+          
+          // And remove the CSS applied via insertCSS (requires exact string match or page reload)
+          chrome.scripting.removeCSS({
+            target: { tabId: tabId, allFrames: true },
+            css: rule.css
           }).catch(() => {});
         }
       });

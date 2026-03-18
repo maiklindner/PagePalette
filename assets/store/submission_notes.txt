@@ -16,6 +16,9 @@ Required to detect URL changes and trigger the styling process when navigating.
 - activeTab: 
 Required to securely access the current tab's URL for rule matching.
 
+- webNavigation: 
+Required to detect and apply custom styles during the earliest possible navigation phase (onCommitted), preventing a "Flash of Unstyled Content" (FOUC).
+
 - host_permissions (<all_urls>): 
 Required to allow the extension to apply styles to any website you define in your rules.
 
@@ -33,4 +36,4 @@ https://github.com/maiklindner/PagePalette/blob/main/PRIVACY.md
 2. Add a new rule with Pattern: "google.com" and CSS: "body { background: red !important; }".
 3. Save the rule and ensure the toggle is active.
 4. Navigate to google.com (or any matching subpage).
-5. The custom CSS will be automatically injected, changing the page background color instantly.
+5. The custom CSS will be injected instantly via webNavigation.onCommitted, ensuring no Flash of Unstyled Content (FOUC).

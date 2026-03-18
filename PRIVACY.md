@@ -31,6 +31,7 @@ Bei der Installation bittet die Erweiterung um folgende Berechtigungen:
 *   **`tabs` & `*://*/*` (host_permissions)**: Wird benötigt, um die URL des gerade geöffneten Tabs auszulesen und mit deinen definierten Regeln abzugleichen, sowie um das CSS in die Seite zu injizieren. Die Erweiterung liest nicht den Inhalt deiner Webseiten (wie Texte, Passwörter oder Formulareingaben).
 *   **`storage`**: Wird benötigt, um deine CSS-Regeln zu speichern.
 *   **`scripting`**: Wird benötigt, um das CSS-Styling physisch auf die abgerufene Seite anzuwenden.
+*   **`webNavigation`**: Wird benötigt, um URL-Änderungen bereits beim frühestmöglichen Zeitpunkt der Seitennavigation zu erkennen, um Anzeigeverzögerungen (Flash of Unstyled Content) zu vermeiden.
 
 **5. Kontakt**
 
@@ -71,6 +72,7 @@ During installation, the extension requests the following permissions:
 *   **`tabs` & `*://*/*` (host_permissions)**: Required to read the URL of the currently open tab to match it against your defined rules, and to inject the CSS into the page. The extension does not read the content of your websites (such as text, passwords, or form inputs).
 *   **`storage`**: Required to save your custom CSS rules.
 *   **`scripting`**: Required to physically apply the CSS styling to the matching page.
+*   **`webNavigation`**: Required to detect URL changes at the earliest possible stage of navigation to apply CSS styling and prevent display delays (Flash of Unstyled Content).
 
 **5. Contact**
 
