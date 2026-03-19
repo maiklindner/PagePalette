@@ -94,7 +94,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // We evaluate for badge update when switching tabs
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tab) => {
-    if (tab && tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
+    // Check for chrome.runtime.lastError or if tab exists
+    if (chrome.runtime.lastError || !tab) return;
+    if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
       evaluateRulesForTab(tabId, tab.url, INJECT_MODE.BADGE_ONLY);
     }
   });
@@ -119,6 +121,9 @@ function getMatchingRules(rules, url) {
 
 function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
   chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
+    // If we're in the middle of a storage get, the tab might have closed
+    if (chrome.runtime.lastError) return;
+
     let rules = data.rules;
     const rulesChanged = ensureUniqueIds(rules);
     if (rulesChanged) {
@@ -156,12 +161,7 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
               chrome.scripting.removeCSS({
                 target: { tabId: tabId, allFrames: true },
                 css: rule.css
-              }).catch(() => { }).finally(() => {
-                chrome.scripting.insertCSS({
-                  target: { tabId: tabId, allFrames: true },
-                  css: rule.css
-                }).catch(() => { });
-              });
+              }).catch(() => { }); // Tab might be gone
             }
 
             // Always update/inject the ID-based style tag (best for LIVE_UPDATE and runtime sync)
@@ -179,13 +179,13 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
                 }
               },
               args: [rule.id, rule.css]
-            }).catch(() => { });
+            }).catch(() => { }); // Tab might be gone
           } else {
             // Rule disabled: Cleanup both methods
             chrome.scripting.removeCSS({
               target: { tabId: tabId, allFrames: true },
               css: rule.css
-            }).catch(() => { });
+            }).catch(() => { }); // Tab might be gone
 
             chrome.scripting.executeScript({
               target: { tabId: tabId, allFrames: true },
@@ -194,7 +194,7 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
                 if (style) style.remove();
               },
               args: [rule.id]
-            }).catch(() => { });
+            }).catch(() => { }); // Tab might be gone
           }
         });
       }
@@ -214,15 +214,27 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
 
 // Function to update the extension icon badge
 function updateBadge(tabId, count, color = '#333333') {
-  if (count > 0) {
-    chrome.action.setBadgeText({ text: count.toString(), tabId: tabId });
-    chrome.action.setBadgeBackgroundColor({ color: color, tabId: tabId });
-    if (chrome.action.setBadgeTextColor) {
-      chrome.action.setBadgeTextColor({ color: '#eeeeee', tabId: tabId });
+  try {
+    if (count > 0) {
+      chrome.action.setBadgeText({ text: count.toString(), tabId: tabId }, () => {
+        if (chrome.runtime.lastError) { /* Tab might be gone */ }
+      });
+      chrome.action.setBadgeBackgroundColor({ color: color, tabId: tabId }, () => {
+        if (chrome.runtime.lastError) { /* Tab might be gone */ }
+      });
+      if (chrome.action.setBadgeTextColor) {
+        chrome.action.setBadgeTextColor({ color: '#eeeeee', tabId: tabId }, () => {
+          if (chrome.runtime.lastError) { /* Tab might be gone */ }
+        });
+      }
+    } else {
+      // Remove badge completely
+      chrome.action.setBadgeText({ text: '', tabId: tabId }, () => {
+        if (chrome.runtime.lastError) { /* Tab might be gone */ }
+      });
     }
-  } else {
-    // Remove badge completely
-    chrome.action.setBadgeText({ text: '', tabId: tabId });
+  } catch (e) {
+    // Catch-all for unexpected errors in badge update
   }
 }
 
