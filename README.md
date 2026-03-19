@@ -12,6 +12,8 @@
 ## Features
 
 - **Custom Styles:** Add your own CSS to any website to hide annoying elements, change colors, or adjust layouts.
+- **Visual Badge Feedback**: The extension icon shows a badge if styles are active (**Blue**) or match the current page but are disabled (**Gray**).
+- **Drag & Drop Reordering**: Easily organize your rule priority by dragging and dropping items in the list.
 - **Rule Naming:** Organize your rules by giving them descriptive names.
 - **Regex Support:** Match exact URLs or broad domains using Regular Expressions.
 - **Export & Import:** Easily backup your rules or transfer them between browsers via JSON files.
