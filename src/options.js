@@ -8,6 +8,8 @@ const editorTitle = document.getElementById('editorTitle');
 const ruleNameInput = document.getElementById('ruleName');
 const ruleRegexInput = document.getElementById('ruleRegex');
 const ruleCssInput = document.getElementById('ruleCss');
+const ruleCssHighlight = document.getElementById('ruleCssHighlight').querySelector('code');
+const ruleCssContainer = document.getElementById('ruleCssHighlight');
 const saveRuleBtn = document.getElementById('saveRuleBtn');
 const cancelRuleBtn = document.getElementById('cancelRuleBtn');
 
@@ -107,7 +109,7 @@ function localizeHtmlPage() {
   document.getElementById('exportBtn').textContent = getMessage('optionsBtnExport');
   document.getElementById('importBtn').textContent = getMessage('optionsBtnImport');
   
-  if (!editingRuleId) {
+  if (!editingRuleId || editingRuleId.startsWith('rule_new_')) {
     document.getElementById('editorTitle').textContent = getMessage('optionsAddNewRule');
   } else {
     document.getElementById('editorTitle').textContent = getMessage('optionsEditRule');
@@ -131,10 +133,8 @@ function localizeHtmlPage() {
 
 // Initialize
 function init() {
-  loadRules();
-  
   // Event Listeners
-  addNewBtn.addEventListener('click', openEditorForNew);
+  addNewBtn.addEventListener('click', () => openEditor());
   cancelRuleBtn.addEventListener('click', closeEditor);
   saveRuleBtn.addEventListener('click', saveRule);
   
@@ -143,10 +143,6 @@ function init() {
   importFile.addEventListener('change', importRules);
   
   document.getElementById('toastUndoBtn').addEventListener('click', undoDelete);
-  
-  // Live Preview listener
-  ruleCssInput.addEventListener('input', triggerLiveUpdate);
-  ruleRegexInput.addEventListener('input', triggerLiveUpdate);
 }
 
 // Load rules from storage
@@ -213,7 +209,10 @@ function renderRules() {
 
   // Attach listeners to new buttons
   document.querySelectorAll('.edit-rule-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => openEditorForEdit(e.target.dataset.id));
+    btn.addEventListener('click', (e) => {
+      const rule = allRules.find(r => r.id === e.target.dataset.id);
+      if (rule) openEditor(rule);
+    });
   });
   
   document.querySelectorAll('.delete-rule-btn').forEach(btn => {
@@ -225,31 +224,26 @@ function renderRules() {
   });
 }
 
-// Open editor to create a new rule
-function openEditorForNew() {
-  editingRuleId = "rule_new_" + Date.now(); // Temporary ID for live preview
-  editorTitle.textContent = getMessage('optionsAddNewRule');
-  ruleNameInput.value = '';
-  ruleRegexInput.value = '';
-  ruleCssInput.value = '';
+// Open editor for new or existing rule
+function openEditor(rule = null) {
+  if (rule) {
+    editingRuleId = rule.id;
+    editorTitle.textContent = getMessage('optionsEditRule');
+    ruleNameInput.value = rule.name || '';
+    ruleRegexInput.value = rule.urlRegex || '';
+    ruleCssInput.value = rule.css || '';
+  } else {
+    editingRuleId = "rule_new_" + Date.now(); // Temporary ID for live preview
+    editorTitle.textContent = getMessage('optionsAddNewRule');
+    ruleNameInput.value = '';
+    ruleRegexInput.value = '';
+    ruleCssInput.value = '';
+  }
   
+  syncHighlight();
   rulesSection.classList.add('hidden');
   editorSection.classList.remove('hidden');
-}
-
-// Open editor to modify an existing rule
-function openEditorForEdit(id) {
-  const rule = allRules.find(r => r.id === id);
-  if (!rule) return;
-
-  editingRuleId = id;
-  editorTitle.textContent = getMessage('optionsEditRule');
-  ruleNameInput.value = rule.name || '';
-  ruleRegexInput.value = rule.urlRegex;
-  ruleCssInput.value = rule.css;
-  
-  rulesSection.classList.add('hidden');
-  editorSection.classList.remove('hidden');
+  ruleNameInput.focus();
 }
 
 // Close the editor
@@ -432,6 +426,43 @@ function triggerLiveUpdate() {
   }, 300); // 300ms debounce
 }
 
+function syncHighlight() {
+  const content = ruleCssInput.value;
+  // Prism needs a trailing newline for correct rendering sometimes
+  ruleCssHighlight.textContent = content + (content.endsWith('\n') ? ' ' : '');
+  Prism.highlightElement(ruleCssHighlight);
+  
+  // Sync height if needed (though CSS handles min-height)
+  ruleCssContainer.style.height = ruleCssInput.scrollHeight + 'px';
+}
+
+function initEditor() {
+  ruleCssInput.addEventListener('input', () => {
+    syncHighlight();
+    triggerLiveUpdate();
+  });
+
+  ruleCssInput.addEventListener('scroll', () => {
+    ruleCssContainer.scrollTop = ruleCssInput.scrollTop;
+    ruleCssContainer.scrollLeft = ruleCssInput.scrollLeft;
+  });
+
+  ruleCssInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = ruleCssInput.selectionStart;
+      const end = ruleCssInput.selectionEnd;
+      const value = ruleCssInput.value;
+
+      ruleCssInput.value = value.substring(0, start) + "    " + value.substring(end);
+      ruleCssInput.selectionStart = ruleCssInput.selectionEnd = start + 4;
+      
+      syncHighlight();
+      triggerLiveUpdate();
+    }
+  });
+}
+
 // Dump to chrome.storage
 function saveToStorage(callback) {
   chrome.storage.local.set({ rules: allRules }, () => {
@@ -509,6 +540,8 @@ function escapeHTML(str) {
 
 // Boot
 document.addEventListener('DOMContentLoaded', () => {
+  loadRules();
+  initEditor();
   initLocalization(() => {
     init();
   });

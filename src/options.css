@@ -193,8 +193,82 @@ p#optionsDescription {
   min-height: 200px;
 }
 
+/* Code Editor Wrapper */
+.editor-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--input-bg-color);
+  overflow: hidden;
+}
+
+.editor-wrapper textarea,
+.editor-wrapper pre,
+.editor-wrapper pre[class*="language-"] {
+  margin: 0 !important;
+  padding: 16px !important;
+  border: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 200px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+  tab-size: 4 !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  background: transparent !important;
+  color: inherit !important;
+  text-shadow: none !important;
+  box-sizing: border-box !important;
+  scrollbar-gutter: stable;
+}
+
+.editor-wrapper textarea {
+  overflow: auto !important;
+}
+
+.editor-wrapper pre {
+  overflow: hidden !important;
+}
+
+.editor-wrapper code[class*="language-"] {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+.editor-wrapper textarea {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: var(--text-color);
+  resize: vertical;
+  display: block;
+}
+
+.editor-wrapper pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Ensure prism styles don't add unwanted margins */
+.editor-wrapper pre[class*="language-"] {
+  background: transparent !important;
+}
+
 .form-group input:focus, 
-.form-group textarea:focus {
+.editor-wrapper:focus-within {
   outline: none;
   border-color: var(--primary-color);
 }
