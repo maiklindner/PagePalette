@@ -79,5 +79,8 @@
   },
   "optionsImportError": {
     "message": "Falha ao importar regras. Formato de arquivo inválido."
+  },
+  "popupNoMatching": {
+    "message": "Nenhuma regra correspondente para esta página."
   }
 }

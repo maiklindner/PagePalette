@@ -149,10 +149,40 @@ function init() {
 function loadRules() {
   chrome.storage.local.get({ rules: [] }, (data) => {
     allRules = data.rules;
-    if (ensureUniqueIds(allRules)) {
-      saveToStorage();
+    const rulesChanged = ensureUniqueIds(allRules);
+    if (rulesChanged) {
+      saveToStorage(); // This will save the updated allRules
     }
     renderRules();
+
+    // Handle deep-links (e.g. from popup)
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    
+    if (action === 'new') {
+      const url = params.get('url') || '';
+      const domain = params.get('domain') || '';
+      
+      let suggestedRegex = url;
+      if (domain) {
+        const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        suggestedRegex = `.*${escapedDomain}.*`;
+      }
+
+      openEditor({
+        id: "rule_new_" + Date.now(),
+        name: '',
+        urlRegex: suggestedRegex,
+        css: '',
+        enabled: true
+      });
+    } else if (action === 'edit' && params.get('id')) {
+      const targetId = params.get('id');
+      const ruleToEdit = allRules.find(r => r.id === targetId);
+      if (ruleToEdit) {
+        openEditor(ruleToEdit);
+      }
+    }
   });
 }
 

@@ -79,5 +79,8 @@
   },
   "optionsImportError": {
     "message": "Failed to import rules. Invalid file format."
+  },
+  "popupNoMatching": {
+    "message": "No matching rules for this page."
   }
 }

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-03-19
+
+### Added
+- **Rules Management Popup**: A new interactive popup (styled after FeeFier) that lists all matching rules for the current website.
+- **Individual Rule Toggles**: Rules can now be enabled or disabled individually directly from the popup.
+- **Direct Rule Editing**: Clicking on a rule in the popup now jumps directly to its editor in the settings.
+- **Smart Rule Creation**: The "Add New Rule" button in the popup now automatically opens the editor with a suggested RegEx for the current domain.
+
+### Changed
+- **New Interaction Model**: Clicking the extension icon now opens the popup instead of immediately toggling all styles.
+
 ## [1.5.0] - 2026-03-19
 
 ### Added
