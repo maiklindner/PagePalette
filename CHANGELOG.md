@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-03-19
+
+### Added
+- **CSS Syntax Highlighting**: Integrated Prism.js into the rule editor for real-time CSS highlighting.
+- **Improved Editor**: Added Tab-key support and scroll synchronization for a better editing experience.
+
 ## [1.4.3] - 2026-03-19
 
 ### Fixed

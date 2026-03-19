@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PagePalette</title>
+  <link rel="stylesheet" href="lib/prism.css">
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
@@ -58,7 +59,10 @@
         
         <div class="form-group">
           <label for="ruleCss">Custom CSS</label>
-          <textarea id="ruleCss" placeholder="body { background-color: #f0f0f0 !important; }"></textarea>
+          <div class="editor-wrapper">
+            <pre id="ruleCssHighlight" class="language-css" aria-hidden="true"><code class="language-css"></code></pre>
+            <textarea id="ruleCss" placeholder="body { background-color: #f0f0f0 !important; }" spellcheck="false"></textarea>
+          </div>
         </div>
         
         <div class="form-actions">
@@ -71,6 +75,7 @@
       <button id="toastUndoBtn" class="toast-undo-btn hidden">Undo</button>
     </div>
   </div>
+  <script src="lib/prism.js"></script>
   <script src="options.js"></script>
 </body>
 </html>
