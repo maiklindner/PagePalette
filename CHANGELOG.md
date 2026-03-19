@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.3] - 2026-03-19
+
+### Fixed
+- **Duplicate Rule Suppression**: Fixed an issue where new rules were created twice due to Live Preview conflicts. Temporary previews are now isolated from the permanent list.
+
 ## [1.4.2] - 2026-03-18
 
 ### Changed

@@ -257,6 +257,7 @@ function closeEditor() {
   editingRuleId = null;
   rulesSection.classList.remove('hidden');
   editorSection.classList.add('hidden');
+  chrome.storage.local.remove('previewRule');
   loadRules(); // Reload to revert any unsaved live changes
 }
 
@@ -300,6 +301,7 @@ function saveRule() {
   }
 
   editingRuleId = null;
+  chrome.storage.local.remove('previewRule');
   saveToStorage(() => {
     closeEditor();
     renderRules();
@@ -404,22 +406,27 @@ function triggerLiveUpdate() {
     // Update the rule in memory
     let rule = allRules.find(r => r.id === editingRuleId);
     if (!rule) {
-      // It's a new rule being previewed - always allow preview
-      rule = {
+      // It's a new rule being previewed - use separate previewRule storage 
+      // to avoid polluting the main rules list before saving.
+      const previewRule = {
         id: editingRuleId,
         name: ruleNameInput.value.trim(),
         urlRegex: regexValue,
         css: cssValue,
         enabled: true
       };
-      const previewRules = [...allRules, rule];
-      chrome.storage.local.set({ rules: previewRules });
+      chrome.storage.local.set({ previewRule });
     } else {
-      // For existing rules, only trigger live preview if it's currently enabled
+      // For existing rules, we can also use previewRule to avoid intermediate saves
+      // but current background.js logic handles it fine if we just update the main list.
+      // However, to be consistent and avoid "ghost" rules if cancelled:
       if (rule.enabled) {
-        rule.urlRegex = regexValue;
-        rule.css = cssValue;
-        saveToStorage();
+        const previewRule = {
+          ...rule,
+          urlRegex: regexValue,
+          css: cssValue
+        };
+        chrome.storage.local.set({ previewRule });
       }
     }
   }, 300); // 300ms debounce

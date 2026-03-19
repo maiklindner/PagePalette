@@ -118,11 +118,22 @@ function getMatchingRules(rules, url) {
 }
 
 function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
-  chrome.storage.local.get({ rules: [] }, (data) => {
-    const rules = data.rules;
+  chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
+    let rules = data.rules;
     const rulesChanged = ensureUniqueIds(rules);
     if (rulesChanged) {
       chrome.storage.local.set({ rules: rules });
+    }
+
+    // Merge preview rule if it exists (for live preview of unsaved rules)
+    if (data.previewRule) {
+      // If it's an update to an existing rule, replace it in the local copy
+      const existingIdx = rules.findIndex(r => r.id === data.previewRule.id);
+      if (existingIdx !== -1) {
+        rules[existingIdx] = data.previewRule;
+      } else {
+        rules.push(data.previewRule);
+      }
     }
 
     const applicableRules = getMatchingRules(rules, url);
