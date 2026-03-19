@@ -219,11 +219,19 @@ p#optionsDescription {
   tab-size: 4 !important;
   white-space: pre !important;
   word-wrap: normal !important;
-  overflow-y: hidden;
   background: transparent !important;
   color: inherit !important;
   text-shadow: none !important;
   box-sizing: border-box !important;
+  scrollbar-gutter: stable;
+}
+
+.editor-wrapper textarea {
+  overflow: auto !important;
+}
+
+.editor-wrapper pre {
+  overflow: hidden !important;
 }
 
 .editor-wrapper code[class*="language-"] {
