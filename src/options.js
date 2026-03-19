@@ -146,44 +146,46 @@ function init() {
 }
 
 // Load rules from storage
-function loadRules() {
+function loadRules(callback) {
   chrome.storage.local.get({ rules: [] }, (data) => {
     allRules = data.rules;
     const rulesChanged = ensureUniqueIds(allRules);
     if (rulesChanged) {
-      saveToStorage(); // This will save the updated allRules
+      saveToStorage();
     }
     renderRules();
-
-    // Handle deep-links (e.g. from popup)
-    const params = new URLSearchParams(window.location.search);
-    const action = params.get('action');
-    
-    if (action === 'new') {
-      const url = params.get('url') || '';
-      const domain = params.get('domain') || '';
-      
-      let suggestedRegex = url;
-      if (domain) {
-        const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        suggestedRegex = `.*${escapedDomain}.*`;
-      }
-
-      openEditor({
-        id: "rule_new_" + Date.now(),
-        name: '',
-        urlRegex: suggestedRegex,
-        css: '',
-        enabled: true
-      });
-    } else if (action === 'edit' && params.get('id')) {
-      const targetId = params.get('id');
-      const ruleToEdit = allRules.find(r => r.id === targetId);
-      if (ruleToEdit) {
-        openEditor(ruleToEdit);
-      }
-    }
+    if (callback) callback();
   });
+}
+
+function handleDeepLinks() {
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get('action');
+  
+  if (action === 'new') {
+    const url = params.get('url') || '';
+    const domain = params.get('domain') || '';
+    
+    let suggestedRegex = url;
+    if (domain) {
+      const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      suggestedRegex = `.*${escapedDomain}.*`;
+    }
+
+    openEditor({
+      id: "rule_new_" + Date.now(),
+      name: '',
+      urlRegex: suggestedRegex,
+      css: '',
+      enabled: true
+    });
+  } else if (action === 'edit' && params.get('id')) {
+    const targetId = params.get('id');
+    const ruleToEdit = allRules.find(r => r.id === targetId);
+    if (ruleToEdit) {
+      openEditor(ruleToEdit);
+    }
+  }
 }
 
 // Render the rules list
@@ -282,6 +284,14 @@ function closeEditor() {
   rulesSection.classList.remove('hidden');
   editorSection.classList.add('hidden');
   chrome.storage.local.remove('previewRule');
+  
+  // Clear URL parameters if opened via deep-link
+  const url = new URL(window.location.href);
+  if (url.search) {
+    url.search = '';
+    window.history.replaceState({}, document.title, url.pathname);
+  }
+
   loadRules(); // Reload to revert any unsaved live changes
 }
 
@@ -570,7 +580,9 @@ function escapeHTML(str) {
 
 // Boot
 document.addEventListener('DOMContentLoaded', () => {
-  loadRules();
+  loadRules(() => {
+    handleDeepLinks();
+  });
   initEditor();
   initLocalization(() => {
     init();

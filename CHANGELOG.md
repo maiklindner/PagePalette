@@ -13,6 +13,12 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **New Interaction Model**: Clicking the extension icon now opens the popup instead of immediately toggling all styles.
 
+### Fixed
+- **Double Padding**: Fixed editor layout issues with Prism.js integration.
+- **Editor Scrolling**: Fixed scrolling and alignment between textarea and highlight layer.
+- **Navigation Logic**: Fixed "Cancel" button behavior when navigating via deep-links from the popup.
+- **Label Alignment**: Corrected various UI spacing and alignment issues.
+
 ## [1.5.0] - 2026-03-19
 
 ### Added
