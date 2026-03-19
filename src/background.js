@@ -226,38 +226,8 @@ function updateBadge(tabId, count, color = '#333333') {
   }
 }
 
-// Open options page or toggle styles on extension icon click
-chrome.action.onClicked.addListener((tab) => {
-  if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
-    chrome.runtime.openOptionsPage();
-    return;
-  }
-
-  chrome.storage.local.get({ rules: [] }, (data) => {
-    const rules = data.rules;
-    ensureUniqueIds(rules);
-    const applicableRules = getMatchingRules(rules, tab.url);
-
-    // If there are applicable rules for this page, toggle them
-    if (applicableRules.length > 0) {
-      const hasEnabledRules = applicableRules.some(r => r.enabled);
-      const newEnabledState = !hasEnabledRules;
-
-      // Update rules directly via reference
-      applicableRules.forEach(appRule => {
-        appRule.enabled = newEnabledState;
-      });
-
-      // Save the updated main rules array
-      chrome.storage.local.set({ rules: rules });
-      // The chrome.storage.onChanged listener will handle the actual injection 
-      // and badge update for the active tab immediately.
-    } else {
-      // No matching rules for this page -> Open the Options Page
-      chrome.runtime.openOptionsPage();
-    }
-  });
-});
+// Rule evaluation and badge updates are handled via storage listeners and webNavigation events.
+// The popup (popup.html) handles individual rule toggling.
 
 // Cleanup memory when a tab is closed
 chrome.tabs.onRemoved.addListener((tabId) => {

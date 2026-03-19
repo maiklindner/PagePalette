@@ -16,6 +16,8 @@ Description:
 PagePalette is a lightweight browser extension that lets you apply custom CSS styles to any website. Whether you want to hide annoying banners, create a makeshift dark mode for a specific site, or just tweak the font size, PagePalette gives you full control.
 
 Features:
+- Rules Popup: Manage and toggle your matching rules directly from the extension icon.
+- CSS Syntax Highlighting: Real-time code highlighting in the editor for a better experience.
 - Regex URL Matching: Apply styles to a single page or domains using Regular Expressions.
 - Rule Naming: Give your styles descriptive names to stay organized.
 - Export & Import: Backup your rules or sync them manually via JSON files.
@@ -39,6 +41,8 @@ Description:
 PagePalette ist eine schlanke Browser-Erweiterung, mit der du benutzerdefinierte CSS-Stile auf jede beliebige Website anwenden kannst. Egal, ob du nervige Banner ausblenden, einen eigenen Dark Mode für eine bestimmte Seite basteln oder nur die Schriftgröße anpassen willst – PagePalette gibt dir die volle Kontrolle.
 
 Funktionen:
+- Regel-Popup: Verwalte und aktiviere passende Regeln direkt über das Erweiterungs-Icon.
+- CSS-Syntax-Highlighting: Echtzeit-Hervorhebung im Editor für eine bessere Bedienbarkeit.
 - URL-Muster mit Regex: Wende Stile über Reguläre Ausdrücke an (z. B. .*wikipedia\.org.*).
 - Namensgebung: Gib deinen Regeln Namen, um den Überblick zu behalten.
 - Export & Import: Sichere deine Regeln oder übertrage sie manuell per JSON-Datei.
@@ -62,6 +66,8 @@ Description:
 PagePalette es una extensión ligera que te permite aplicar estilos CSS personalizados a cualquier web. Ya sea para ocultar banners molestos o crear un modo oscuro, PagePalette te da el control total.
 
 Características:
+- Popup de reglas: Gestiona y alterna tus reglas directamente desde el icono de la extensión.
+- Resaltado de sintaxis CSS: Resaltado de código en tiempo real en el editor.
 - URLs con Regex: Aplica estilos usando expresiones regulares.
 - Nombres de reglas: Asigna nombres descriptivos a tus estilos para organizarte mejor.
 - Exportar e importar: Haz copias de seguridad de tus reglas o sincronízalas manualmente mediante archivos JSON.
@@ -85,6 +91,8 @@ Description:
 PagePalette est une extension légère qui vous permet d'appliquer du CSS personnalisé à n'importe quel site Web, du blocage de bannières à la création de thèmes sombres.
 
 Fonctionnalités :
+- Fenêtre contextuelle des règles : Gérez et activez vos règles directement depuis l'icône de l'extension.
+- Coloration syntaxique CSS : Mise en évidence en temps réel dans l'éditeur.
 - URL Regex : Appliquez des styles via des expressions régulières.
 - Nommage des règles : Donnez des noms descriptifs à vos styles pour mieux vous organiser.
 - Export & Import : Sauvegardez vos règles ou synchronisez-les manuellement via des fichiers JSON.
@@ -108,6 +116,8 @@ Description:
 PagePalette é uma extensão leve que permite aplicar estilos CSS personalizados em qualquer site. Útil para ocultar banners ou criar modos noturnos.
 
 Recursos:
+- Popup de regras: Gerencie e alterne suas regras diretamente do ícone da extensão.
+- Destaque de sintaxe CSS: Realce de código em tempo real no editor.
 - Padrão URL com Regex: Aplique estilos usando Expressões Regulares.
 - Nomeação de regras: Dê nomes descritivos aos seus estilos para se manter organizado.
 - Exportar e Importar: Faça backup de suas regras ou sincronize-as manualmente via arquivos JSON.
@@ -131,6 +141,8 @@ Description:
 PagePalette 是一款轻量级扩展，可以让你为任何网站设置自定义 CSS 样式。无论是隐藏烦人的横幅、定制深色模式还是修改字体大小，PagePalette 都能帮助你实现。
 
 功能特点:
+- 规则弹出窗口: 直接从扩展图标管理和切换您的匹配规则。
+- CSS 语法高亮: 编辑器中的实时代码高亮显示。
 - 正则表达式匹配: 依靠正则表达式轻松将样式应用到特定网页或域名。
 - 规则命名：为您的样式提供描述性名称以保持条理。
 - 导出与导入：通过 JSON 文件备份您的规则或手动同步它们。
@@ -154,6 +166,8 @@ Description:
 PagePaletteは、任意のWebサイトにユーザー定義のCSSスタイルを適用できる軽量ブラウザ拡張機能です。鬱陶しいバナーを非表示にしたり、ダークモードを作成したり、フォントサイズを調整したりできます。
 
 機能の特徴:
+- ルールポップアップ: 拡張機能アイコンから直接ルールを管理および切り替え。
+- CSS構文ハイライト: エディタでのリアルタイムなコードハイライト。
 - Regex URL マッチング: 正規表現を使用してスタイルを適用します。
 - ルールの命名：スタイルに説明的な名前を付けて整理しましょう。
 - エクスポートとインポート：JSONファイルを使用してルールのバックアップや手動同期が可能です。

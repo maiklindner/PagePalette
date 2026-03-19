@@ -79,5 +79,8 @@
   },
   "optionsImportError": {
     "message": "导入规则失败。文件格式无效。"
+  },
+  "popupNoMatching": {
+    "message": "此页面没有匹配的规则。"
   }
 }

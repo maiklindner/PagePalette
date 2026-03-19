@@ -79,5 +79,8 @@
   },
   "optionsImportError": {
     "message": "Regeln konnten nicht importiert werden. Ungültiges Dateiformat."
+  },
+  "popupNoMatching": {
+    "message": "Keine passenden Regeln für diese Seite."
   }
 }
