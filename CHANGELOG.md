@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] - 2026-03-20
+
+### Fixed
+- **FOUC Glitch**: Switched to `chrome.scripting.insertCSS` for initial navigation, which applies styles before the page renders, eliminating the "Original Content Glitch".
+- **Iframe Styling**: Enabled rule evaluation for all frames via `webNavigation` listeners, ensuring that iframes are correctly styled immediately upon loading.
+
 ## [1.6.0] - 2026-03-19
 
 ### Added

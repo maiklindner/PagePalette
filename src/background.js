@@ -69,17 +69,15 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 });
 
 // We evaluate rules as early as possible when a navigation is committed
+// We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
-  if (details.frameId === 0) { // Main frame navigation
-    evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL);
-  }
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
 });
 
 // For SPAs and history state changes, we also want to catch early injection
+// For SPAs and history state changes, we also want to catch early injection
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  if (details.frameId === 0) {
-    evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL);
-  }
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
 });
 
 // We still check on complete to ensure everything is in sync, but don't re-inject
@@ -119,7 +117,7 @@ function getMatchingRules(rules, url) {
   return applicableRules;
 }
 
-function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
+function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY, frameId = null) {
   chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
     // If we're in the middle of a storage get, the tab might have closed
     if (chrome.runtime.lastError) return;
@@ -132,7 +130,6 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
 
     // Merge preview rule if it exists (for live preview of unsaved rules)
     if (data.previewRule) {
-      // If it's an update to an existing rule, replace it in the local copy
       const existingIdx = rules.findIndex(r => r.id === data.previewRule.id);
       if (existingIdx !== -1) {
         rules[existingIdx] = data.previewRule;
@@ -146,27 +143,38 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
       
-      // Store state for this tab
-      tabState[tabId] = {
-        applicableRules: applicableRules,
-        hasEnabledRules: hasEnabledRules
-      };
+      // Store state for this tab (Only update state for main frame or if we don't have one)
+      if (frameId === 0 || frameId === null) {
+        tabState[tabId] = {
+          applicableRules: applicableRules,
+          hasEnabledRules: hasEnabledRules
+        };
+      }
       
       // Process injection based on mode
       if (mode === INJECT_MODE.INITIAL || mode === INJECT_MODE.LIVE_UPDATE) {
         applicableRules.forEach(rule => {
+          const target = { tabId: tabId };
+          if (frameId !== null) {
+            target.frameIds = [frameId];
+          } else {
+            target.allFrames = true;
+          }
+
           if (rule.enabled) {
             // INITIAL mode uses insertCSS for maximum speed (FOUC prevention)
+            // insertCSS at onCommitted applies the style before the page is fully rendered.
             if (mode === INJECT_MODE.INITIAL) {
-              chrome.scripting.removeCSS({
-                target: { tabId: tabId, allFrames: true },
+              chrome.scripting.insertCSS({
+                target: target,
                 css: rule.css
-              }).catch(() => { }); // Tab might be gone
+              }).catch(() => { }); 
             }
 
-            // Always update/inject the ID-based style tag (best for LIVE_UPDATE and runtime sync)
+            // Also update/inject the ID-based style tag for LIVE_UPDATE synchronization
+            // We use executeScript for this because it allows us to handle replacement via specific IDs.
             chrome.scripting.executeScript({
-              target: { tabId: tabId, allFrames: true },
+              target: target,
               func: (ruleId, cssText) => {
                 let style = document.getElementById('pagepalette-' + ruleId);
                 if (!style) {
@@ -179,22 +187,22 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY) {
                 }
               },
               args: [rule.id, rule.css]
-            }).catch(() => { }); // Tab might be gone
+            }).catch(() => { }); 
           } else {
-            // Rule disabled: Cleanup both methods
+            // Rule disabled: Cleanup
             chrome.scripting.removeCSS({
-              target: { tabId: tabId, allFrames: true },
+              target: target,
               css: rule.css
-            }).catch(() => { }); // Tab might be gone
+            }).catch(() => { }); 
 
             chrome.scripting.executeScript({
-              target: { tabId: tabId, allFrames: true },
+              target: target,
               func: (ruleId) => {
                 const style = document.getElementById('pagepalette-' + ruleId);
                 if (style) style.remove();
               },
               args: [rule.id]
-            }).catch(() => { }); // Tab might be gone
+            }).catch(() => { }); 
           }
         });
       }
