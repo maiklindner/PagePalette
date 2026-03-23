@@ -4,6 +4,21 @@
 // Format: { tabId: { applicableRules: [...], hasEnabledRules: boolean } }
 const tabState = {};
 
+// Cache for rules to eliminate storage latency during navigation (FOUC protection)
+let cachedRules = [];
+let cachedPreviewRule = null;
+
+function refreshCache(callback) {
+  chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
+    cachedRules = data.rules || [];
+    cachedPreviewRule = data.previewRule || null;
+    if (callback) callback();
+  });
+}
+
+// Initial load
+refreshCache();
+
 // Injection Modes for evaluateRulesForTab
 const INJECT_MODE = {
   INITIAL: 'initial',       // At navigation start (FOUC protection)
@@ -56,31 +71,30 @@ function migrateSyncToLocal() {
 
 // Listen for changes in storage to update all matching tabs immediately
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === 'local' && changes.rules) {
-    // For live preview, we want to update all tabs that could match the new rules
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach(tab => {
-        if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
-          evaluateRulesForTab(tab.id, tab.url, INJECT_MODE.LIVE_UPDATE);
-        }
+  if (namespace === 'local') {
+    if (changes.rules || changes.previewRule) {
+      refreshCache(() => {
+        // For live preview, we want to update all tabs that could match the new rules
+        chrome.tabs.query({}, (tabs) => {
+          tabs.forEach(tab => {
+            if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
+              evaluateRulesForTab(tab.id, tab.url, INJECT_MODE.LIVE_UPDATE);
+            }
+          });
+        });
       });
-    });
+    }
   }
 });
 
 // We evaluate rules as early as possible when a navigation is committed
-// We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
-  // Use BADGE_ONLY for initial navigation because inject.js handled the early CSS injection.
-  // This avoids redundant double-injection while still showing the correct badge.
-  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.BADGE_ONLY, details.frameId);
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
 });
 
 // For SPAs and history state changes, we also want to catch early injection
-// For SPAs and history state changes, we also want to catch early injection
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  // Re-check badge and potentially inject (for SPAs)
-  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.BADGE_ONLY, details.frameId);
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
 });
 
 // We still check on complete to ensure everything is in sync, but don't re-inject
@@ -121,27 +135,35 @@ function getMatchingRules(rules, url) {
 }
 
 function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY, frameId = null) {
-  chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
-    // If we're in the middle of a storage get, the tab might have closed
-    if (chrome.runtime.lastError) return;
+  // Use cached rules if available, otherwise fetch from storage
+  if (cachedRules.length > 0 || cachedPreviewRule) {
+    processRules(tabId, url, cachedRules, cachedPreviewRule, mode, frameId);
+  } else {
+    chrome.storage.local.get({ rules: [], previewRule: null }, (data) => {
+      if (chrome.runtime.lastError) return;
+      processRules(tabId, url, data.rules, data.previewRule, mode, frameId);
+    });
+  }
+}
 
-    let rules = data.rules;
-    const rulesChanged = ensureUniqueIds(rules);
-    if (rulesChanged) {
-      chrome.storage.local.set({ rules: rules });
+function processRules(tabId, url, rules, previewRule, mode, frameId) {
+  const rulesChanged = ensureUniqueIds(rules);
+  if (rulesChanged) {
+    chrome.storage.local.set({ rules: rules });
+    cachedRules = rules; // Update cache immediately
+  }
+
+  // Merge preview rule if it exists (for live preview of unsaved rules)
+  if (previewRule) {
+    const existingIdx = rules.findIndex(r => r.id === previewRule.id);
+    if (existingIdx !== -1) {
+      rules[existingIdx] = previewRule;
+    } else {
+      rules.push(previewRule);
     }
+  }
 
-    // Merge preview rule if it exists (for live preview of unsaved rules)
-    if (data.previewRule) {
-      const existingIdx = rules.findIndex(r => r.id === data.previewRule.id);
-      if (existingIdx !== -1) {
-        rules[existingIdx] = data.previewRule;
-      } else {
-        rules.push(data.previewRule);
-      }
-    }
-
-    const applicableRules = getMatchingRules(rules, url);
+  const applicableRules = getMatchingRules(rules, url);
 
     if (applicableRules.length > 0) {
       const hasEnabledRules = applicableRules.some(r => r.enabled);
@@ -220,7 +242,6 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY, frameId 
       delete tabState[tabId];
       updateBadge(tabId, 0);
     }
-  });
 }
 
 // Function to update the extension icon badge
