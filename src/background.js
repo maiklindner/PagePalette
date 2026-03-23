@@ -146,47 +146,78 @@ function evaluateRulesForTab(tabId, url, mode = INJECT_MODE.BADGE_ONLY, frameId 
   }
 }
 
-function processRules(tabId, url, rules, previewRule, mode, frameId) {
-  const rulesChanged = ensureUniqueIds(rules);
-  if (rulesChanged) {
-    chrome.storage.local.set({ rules: rules });
-    cachedRules = rules; // Update cache immediately
+function processRules(tabId, url, originalRules, previewRule, mode, frameId) {
+  // Always clone rules to avoid polluting the global cache
+  const rules = originalRules ? [...originalRules.map(r => ({ ...r }))] : [];
+
+  // Ensure unique IDs ONLY if this is not a transient preview (to avoid recursion)
+  if (mode !== INJECT_MODE.LIVE_UPDATE) {
+    const rulesChanged = ensureUniqueIds(rules);
+    if (rulesChanged) {
+      chrome.storage.local.set({ rules: rules });
+      cachedRules = rules; // Update cache immediately
+    }
   }
 
   // Merge preview rule if it exists (for live preview of unsaved rules)
   if (previewRule) {
     const existingIdx = rules.findIndex(r => r.id === previewRule.id);
     if (existingIdx !== -1) {
-      rules[existingIdx] = previewRule;
+      rules[existingIdx] = { ...previewRule };
     } else {
-      rules.push(previewRule);
+      rules.push({ ...previewRule });
     }
   }
 
   const applicableRules = getMatchingRules(rules, url);
+  const oldState = tabState[tabId];
+  const oldRules = oldState ? oldState.applicableRules : [];
 
-    if (applicableRules.length > 0) {
-      const hasEnabledRules = applicableRules.some(r => r.enabled);
-      
-      // Store state for this tab (Only update state for main frame or if we don't have one)
-      if (frameId === 0 || frameId === null) {
-        tabState[tabId] = {
-          applicableRules: applicableRules,
-          hasEnabledRules: hasEnabledRules
-        };
-      }
-      
-      // Process injection based on mode
-      if (mode === INJECT_MODE.INITIAL || mode === INJECT_MODE.LIVE_UPDATE) {
-        applicableRules.forEach(rule => {
-          const target = { tabId: tabId };
-          if (frameId !== null) {
-            target.frameIds = [frameId];
-          } else {
-            target.allFrames = true;
-          }
+  // Identify rules that were removed (either deleted or no longer match the URL)
+  const removedRules = oldRules.filter(oldRule => !rules.some(r => r.id === oldRule.id));
 
-          if (rule.enabled) {
+  // Identify rules that were disabled but still match (they are in applicableRules but rule.enabled is false)
+  // This is already handled by the rule.enabled check below.
+
+  const hasEnabledRules = applicableRules.some(r => r.enabled);
+
+  // Store state for this tab (Only update state for main frame or if we don't have one)
+  if (frameId === 0 || frameId === null) {
+    tabState[tabId] = {
+      applicableRules: applicableRules,
+      hasEnabledRules: hasEnabledRules
+    };
+  }
+
+  // Helper for applying/removing styles
+  const target = { tabId: tabId };
+  if (frameId !== null) {
+    target.frameIds = [frameId];
+  } else {
+    target.allFrames = true;
+  }
+
+  // 1. Cleanup removed rules (Deleted rules)
+  removedRules.forEach(rule => {
+    chrome.scripting.removeCSS({
+      target: target,
+      css: rule.css
+    }).catch(() => { });
+
+    chrome.scripting.executeScript({
+      target: target,
+      func: (ruleId) => {
+        const style = document.getElementById('pagepalette-' + ruleId);
+        if (style) style.remove();
+      },
+      args: [rule.id]
+    }).catch(() => { });
+  });
+
+  // 2. Process current rules (Inject or remove based on toggle)
+  if (mode === INJECT_MODE.INITIAL || mode === INJECT_MODE.LIVE_UPDATE) {
+    applicableRules.forEach(rule => {
+      if (rule.enabled) {
             // INITIAL mode uses insertCSS for maximum speed (FOUC prevention)
             // insertCSS at onCommitted applies the style before the page is fully rendered.
             if (mode === INJECT_MODE.INITIAL) {
@@ -229,19 +260,17 @@ function processRules(tabId, url, rules, previewRule, mode, frameId) {
               args: [rule.id]
             }).catch(() => { }); 
           }
-        });
-      }
+    });
+  }
 
-      if (hasEnabledRules) {
-        updateBadge(tabId, applicableRules.length, '#333333');
-      } else {
-        updateBadge(tabId, applicableRules.length, '#888888');
-      }
-    } else {
-      // No rules matched
-      delete tabState[tabId];
-      updateBadge(tabId, 0);
-    }
+  // Update badge
+  if (hasEnabledRules) {
+    updateBadge(tabId, applicableRules.length, '#333333');
+  } else if (applicableRules.length > 0) {
+    updateBadge(tabId, applicableRules.length, '#888888');
+  } else {
+    updateBadge(tabId, 0);
+  }
 }
 
 // Function to update the extension icon badge
