@@ -48,12 +48,14 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
-  padding: 0;
+  padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 }
 
 .container {
@@ -64,7 +66,18 @@ body {
   border-radius: 16px;
   padding: 2.5em;
   box-shadow: 0 10px 40px var(--shadow-color);
-  margin: 2em;
+}
+
+footer {
+  margin-top: 24px;
+  text-align: center;
+  color: var(--label-color);
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+footer p {
+  margin: 0;
 }
 
 header {
@@ -79,14 +92,19 @@ h1, h2 {
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
+  color: var(--text-color);
   font-weight: 700;
-  margin-bottom: var(--spacing-sm);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
 }
 
 h2 {
-  font-size: 20px;
+  font-size: 1.25rem;
+  color: var(--text-color);
   font-weight: 600;
+  margin: 0;
 }
 
 p#optionsDescription {
@@ -94,6 +112,17 @@ p#optionsDescription {
   opacity: 0.9;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+.style-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.style-meta {
+  font-size: 0.8125rem;
+  color: var(--label-color);
 }
 
 .hidden {
@@ -445,7 +474,6 @@ input:checked + .slider:before {
   }
 }
 
-/* Responsive adjustments for small screens */
 @media (max-width: 600px) {
   .container {
     padding: 1.5em;
@@ -474,3 +502,4 @@ input:checked + .slider:before {
     justify-content: space-between;
   }
 }
+
