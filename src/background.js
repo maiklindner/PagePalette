@@ -71,13 +71,16 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 // We evaluate rules as early as possible when a navigation is committed
 // We evaluate rules as early as possible when a navigation is committed
 chrome.webNavigation.onCommitted.addListener((details) => {
-  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
+  // Use BADGE_ONLY for initial navigation because inject.js handled the early CSS injection.
+  // This avoids redundant double-injection while still showing the correct badge.
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.BADGE_ONLY, details.frameId);
 });
 
 // For SPAs and history state changes, we also want to catch early injection
 // For SPAs and history state changes, we also want to catch early injection
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.INITIAL, details.frameId);
+  // Re-check badge and potentially inject (for SPAs)
+  evaluateRulesForTab(details.tabId, details.url, INJECT_MODE.BADGE_ONLY, details.frameId);
 });
 
 // We still check on complete to ensure everything is in sync, but don't re-inject
